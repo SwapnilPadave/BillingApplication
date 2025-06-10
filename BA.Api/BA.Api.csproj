@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="14.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
@@ -16,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BA.Database\BA.Database.csproj" />
+    <ProjectReference Include="..\BA.Entities\BA.Entities.csproj" />
     <ProjectReference Include="..\BA.Service\BA.Service.csproj" />
     <ProjectReference Include="..\BA.Utility\BA.Utility.csproj" />
   </ItemGroup>

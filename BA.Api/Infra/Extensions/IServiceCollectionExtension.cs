@@ -1,5 +1,6 @@
 ﻿using BA.Database;
 using BA.Database.Infra;
+using BA.Database.Repos.UserRepository;
 using BA.Service;
 using BA.Utility.Constant;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +26,8 @@ namespace BA.Api.Infra.Extensions
 
         public static void RegisterRepositories(this IServiceCollection services)
         {
-            //services.AddTransient(typeof(IUserRepository), typeof(UserRepository));
+            services.AddTransient(typeof(IUserRepository), typeof(UserRepository))
+                    .AddTransient<SqlCommands>();
         }
 
         public static void ConfigureDatabase(this IServiceCollection services, IConfiguration configuration)
@@ -34,26 +36,26 @@ namespace BA.Api.Infra.Extensions
             {
                 options.UseSqlServer(configuration.GetConnectionString(Constants.SQL_CONNECTION_STRING_KEY))
                         .EnableSensitiveDataLogging(true);
-        });
+            });
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
         }
 
-    public static void ConfigureCors(this IServiceCollection services, IConfiguration configuration)
-    {
-        var origins = configuration.GetSection(Constants.APP_SETTINGS_KEY).GetValue<string>(Constants.CLIENT_APP_URL_KEY);
+        public static void ConfigureCors(this IServiceCollection services, IConfiguration configuration)
+        {
+            var origins = configuration.GetSection(Constants.APP_SETTINGS_KEY).GetValue<string>(Constants.CLIENT_APP_URL_KEY);
 
             string[]? urls = origins?.Split(",", StringSplitOptions.RemoveEmptyEntries);
 
             services.AddCors(c =>
             {
-            c.AddPolicy(Constants.CORS_KEY, builder =>
-                {
-                    builder
-                    .WithOrigins(urls!)
-                    .AllowAnyHeader()
-                    .AllowAnyMethod();
-                });
+                c.AddPolicy(Constants.CORS_KEY, builder =>
+                    {
+                        builder
+                        .WithOrigins(urls!)
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                    });
             });
         }
     }

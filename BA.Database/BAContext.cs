@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BA.Entities.Users;
+using Microsoft.EntityFrameworkCore;
 
 namespace BA.Database
 {
@@ -7,5 +8,7 @@ namespace BA.Database
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
         }
+        public DbSet<User> Users { get; set; }
+        public DbSet<UserLoginMapping> UserLoginMappings { get; set; }
     }
 }

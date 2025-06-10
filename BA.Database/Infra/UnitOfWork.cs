@@ -1,13 +1,23 @@
-﻿using Microsoft.EntityFrameworkCore.Storage;
+﻿using BA.Database.Repos.UserRepository;
+using BA.Database.Repos.UsersRepository;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace BA.Database.Infra
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly BAContext _context;
-        public UnitOfWork(BAContext context)
+        public BAContext _context;
+
+        public IUserRepository UserRepository { get; }
+        public IUserLoginMappingRepository UserLoginMappingRepository { get; }
+
+        public UnitOfWork(BAContext context
+            , IUserRepository userRepository
+            , IUserLoginMappingRepository userLoginMappingRepository)
         {
             _context = context;
+            UserRepository = userRepository;
+            UserLoginMappingRepository = userLoginMappingRepository;
         }
         public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
         {
@@ -27,6 +37,6 @@ namespace BA.Database.Infra
         public async Task RollbackTransactionAsync(CancellationToken cancellationToken = default)
         {
             await _context.Database.RollbackTransactionAsync(cancellationToken);
-        }        
+        }
     }
 }

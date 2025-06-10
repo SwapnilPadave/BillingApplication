@@ -1,0 +1,23 @@
+{
+  "MSG100": "Success.",
+  "MSG101": "Failure.",
+  "MSG102": "Request is null",
+  "MSG500": "Something went wrong",
+
+  "MSG200": "Duplicate folder name.",
+
+  //user
+  "MSG300": "Email already exists.",
+  "MSG301": "Mobile already exists.",
+
+  //email
+  "MSG351": "Email does not belong to the user.",
+  "MSG352": "Not a primary email address.",
+  "MSG353": "Not a alternate email address.",
+  "MSG354": "Email is not varified.",
+  "MSG355": "Email is inactive.",
+  "MSG356": "Primary email address already exists.",
+  "MSG357": "Alternate email address already exists.",
+
+  "BA1001": "No record found."
+}

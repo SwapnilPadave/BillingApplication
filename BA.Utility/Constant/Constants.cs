@@ -14,5 +14,7 @@
         public const string CORS_KEY = "AccessBlob";
         public const string BLOB_STORAGE_CONNECTION_STRING_KEY = "BlobStorageConnectionString";
         public const string SQL_CONNECTION_STRING_KEY = "SqlConnectionString";
+        public const string ENCRYPTION_KEY = "ThisIsA16ByteKey";
+        public const string ENCRYPTION_IV = "ThisIsA16ByteIV!";
     }
 }
