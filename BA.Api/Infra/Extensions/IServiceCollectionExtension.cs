@@ -1,7 +1,10 @@
-﻿using BA.Database;
+﻿using BA.Api.Infra.Authentication;
+using BA.Database;
 using BA.Database.Infra;
 using BA.Database.Repos.UserRepository;
+using BA.Database.Repos.UsersRepository;
 using BA.Service;
+using BA.Utility.AppSettings;
 using BA.Utility.Constant;
 using Microsoft.EntityFrameworkCore;
 using NetCore.AutoRegisterDi;
@@ -26,8 +29,11 @@ namespace BA.Api.Infra.Extensions
 
         public static void RegisterRepositories(this IServiceCollection services)
         {
-            services.AddTransient(typeof(IUserRepository), typeof(UserRepository))
-                    .AddTransient<SqlCommands>();
+            services.AddTransient(typeof(IUserRepository), typeof(UserRepository));
+            services.AddTransient(typeof(IUserLoginMappingRepository), typeof
+                (UserLoginMappingRepository));
+            services.AddTransient<SqlCommands>();
+            services.AddScoped<IJwtProvider, JwtProvider>();
         }
 
         public static void ConfigureDatabase(this IServiceCollection services, IConfiguration configuration)

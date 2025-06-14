@@ -2,11 +2,8 @@
 using BA.Database.Infra;
 using BA.Dtos.UserDtos;
 using BA.Entities.Users;
-using BA.Utility;
 using BA.Utility.Content;
 using BA.Utility.Result;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace BA.Service.Users
 {
@@ -20,7 +17,7 @@ namespace BA.Service.Users
             _sqlCommands = sqlCommands;
         }
 
-        public async Task<Result> AddUserAsync(AddUserDto dto, CancellationToken cancellationToken)
+        public async Task<Result> AddUserAsync(int userId, AddUserDto dto, CancellationToken cancellationToken)
         {
             var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
             try
@@ -34,21 +31,10 @@ namespace BA.Service.Users
                 user.DateOfBirth = dto.DateOfBirth;
                 user.Age = dto.Age;
                 user.CreatedDate = DateTime.Now;
-                user.CreatedBy = 1;
+                user.CreatedBy = userId;
                 user.IsActive = true;
                 var result = await _unitOfWork.UserRepository.AddAsync(user);
                 await _unitOfWork.SaveChangesAsync();
-
-                var userLoginMapping = new UserLoginMapping
-                {
-                    UserId = result.Id,
-                    Username = result.Name,
-                    Password = Utils.Encrypt(result.MobileNumber),
-                    CreatedDate = DateTime.Now,
-                    CreatedBy = 1,
-                    IsActive = true,
-                    IsAdmin = false
-                };
 
                 await transaction.CommitAsync(cancellationToken);
                 return Result.Success();
@@ -82,7 +68,7 @@ namespace BA.Service.Users
             return Result.Success(user);
         }
 
-        public async Task<Result> UpdateUserAsync(int id, UpdateUserDto dto, CancellationToken cancellationToken)
+        public async Task<Result> UpdateUserAsync(int userId, int id, UpdateUserDto dto, CancellationToken cancellationToken)
         {
             var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
             try
@@ -99,7 +85,7 @@ namespace BA.Service.Users
                 user.DateOfBirth = dto.DateOfBirth;
                 user.Age = dto.Age;
                 user.ModifiedDate = DateTime.Now;
-                user.ModifiedBy = 1;
+                user.ModifiedBy = userId;
                 _unitOfWork.UserRepository.Update(user);
 
                 await _unitOfWork.SaveChangesAsync();
@@ -114,7 +100,7 @@ namespace BA.Service.Users
             }
         }
 
-        public async Task<Result> DeleteUserAsync(int id, CancellationToken cancellationToken)
+        public async Task<Result> DeleteUserAsync(int userId, int id, CancellationToken cancellationToken)
         {
             var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
             try
@@ -127,7 +113,7 @@ namespace BA.Service.Users
 
                 user.IsActive = false;
                 user.ModifiedDate = DateTime.Now;
-                user.ModifiedBy = 1;
+                user.ModifiedBy = userId;
                 _unitOfWork.UserRepository.Update(user);
 
                 await _unitOfWork.SaveChangesAsync();

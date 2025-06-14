@@ -1,10 +1,14 @@
+﻿using BA.Api.Infra.Authentication;
 using BA.Api.Infra.Extensions;
 using BA.Api.Infra.Filters;
-using BA.Api.Infra.OptionsSetup;
+using BA.Utility.AppSettings;
 using BA.Utility.Constant;
 using BA.Utility.Content;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace BA.Api
@@ -14,6 +18,9 @@ namespace BA.Api
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
+            builder.Logging.ClearProviders();
+            builder.Logging.AddConsole();
 
             ContentLoader.LanguageLoader(Directory.GetCurrentDirectory());
 
@@ -40,16 +47,38 @@ namespace BA.Api
             builder.Services.AddAutoMapper(typeof(Program));
 
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen(c =>
+
+            builder.Services.AddSwaggerWithJwtSupport();
+
+            builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection(Constants.SMTPSETTINGS_KEY));
+
+            builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(Constants.JWT_KEY));
+
+            var jwtSettings = builder.Configuration.GetSection(Constants.JWT_KEY).Get<JwtOptions>();
+
+            builder.Services.AddAuthentication(options =>
             {
-                c.ResolveConflictingActions(apiDescription => apiDescription.First());
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtSettings?.Issuer,
+                    ValidAudience = jwtSettings?.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings?.Key!)),
+
+                    NameClaimType = ClaimTypes.Name,
+                    RoleClaimType = ClaimTypes.Role
+                };
             });
 
-            builder.Services.ConfigureOptions<JwtOptionsSetup>();
-            builder.Services.ConfigureOptions<JwtBearerOptionsSetup>();
-
-            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                            .AddJwtBearer();
+            builder.Services.AddAuthorization();
 
             var app = builder.Build();
 
@@ -57,15 +86,18 @@ namespace BA.Api
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();
-                app.UseSwaggerUI();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "BA API V1");
+                    c.RoutePrefix = string.Empty;
+                });
             }
-            
+
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseCors(Constants.CORS_KEY);
             app.UseAuthentication();
-            //app.UseAuthorization();
-
+            app.UseAuthorization();
 
             app.MapControllers();
 

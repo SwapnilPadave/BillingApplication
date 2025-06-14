@@ -2,12 +2,14 @@
 using BA.Api.Infra.Requests.UserRequests;
 using BA.Dtos.UserDtos;
 using BA.Service.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BA.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class UserController : BaseController
     {
         private readonly IUserService _userService;
@@ -23,7 +25,7 @@ namespace BA.Api.Controllers
         public async Task<Dictionary<string, object>> AddAsync([FromBody] AddUserRequest request, CancellationToken cancellationToken)
         {
             var user = _mapper.Map<AddUserDto>(request);
-            var result = await _userService.AddUserAsync(user, cancellationToken);
+            var result = await _userService.AddUserAsync(UserId, user, cancellationToken);
             if (result.IsSuccess)
                 return APIResponse("MSG100", result.Data!);
             return APIResponse(result.Error.ErrorMsg, null!);
@@ -51,7 +53,7 @@ namespace BA.Api.Controllers
         public async Task<Dictionary<string, object>> UpdateAsync(int id, [FromBody] UpdateUserRequest request, CancellationToken cancellationToken)
         {
             var user = _mapper.Map<UpdateUserDto>(request);
-            var result = await _userService.UpdateUserAsync(id, user, cancellationToken);
+            var result = await _userService.UpdateUserAsync(UserId, id, user, cancellationToken);
             if (result.IsSuccess)
                 return APIResponse("MSG100", result.Data!);
             return APIResponse(result.Error.ErrorMsg, null!);
@@ -60,9 +62,10 @@ namespace BA.Api.Controllers
         [HttpDelete("Delete")]
         public async Task<Dictionary<string, object>> DeleteAsync(int id, CancellationToken cancellationToken)
         {
-            var result = await _userService.DeleteUserAsync(id, cancellationToken);
+            var result = await _userService.DeleteUserAsync(UserId, id, cancellationToken);
             if (result.IsSuccess)
                 return APIResponse("MSG100", result.Data!);
             return APIResponse(result.Error.ErrorMsg, null!);
         }
+    }
 }

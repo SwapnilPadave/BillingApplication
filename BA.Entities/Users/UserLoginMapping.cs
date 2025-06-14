@@ -3,11 +3,12 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BA.Entities.Users
 {
+    [Table("Login")]
     public class UserLoginMapping
     {
         [Key]
         public int? Id { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
         public string Username { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public DateTime CreatedDate { get; set; }
@@ -16,8 +17,5 @@ namespace BA.Entities.Users
         public int ModifiedBy { get; set; }
         public bool IsAdmin { get; set; }
         public bool IsActive { get; set; }
-
-        [ForeignKey("UserId")]
-        public User? User { get; set; }
     }
 }

@@ -16,5 +16,6 @@
         public const string SQL_CONNECTION_STRING_KEY = "SqlConnectionString";
         public const string ENCRYPTION_KEY = "ThisIsA16ByteKey";
         public const string ENCRYPTION_IV = "ThisIsA16ByteIV!";
+        public const string SMTPSETTINGS_KEY = "SmtpSettings";
     }
 }

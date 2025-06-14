@@ -11,7 +11,25 @@ namespace BA.Api.Infra.Filters
     {
         public void OnActionExecuting(ActionExecutingContext context)
         {
-            //throw new NotImplementedException();
+            if (context.Controller is Controllers.BaseController baseController)
+            {
+                var user = context.HttpContext.User;
+
+                if (user?.Identity?.IsAuthenticated == true)
+                {
+                    var userIdClaim = user.FindFirst("UserId")?.Value;
+                    if (int.TryParse(userIdClaim, out int userId))
+                        baseController.UserId = userId;
+
+                    baseController.UserName = user.FindFirst("UserName")?.Value ?? string.Empty;
+
+                    baseController.IsAdmin = string.Equals(
+                        user.FindFirst("Admin")?.Value, "true", StringComparison.OrdinalIgnoreCase);
+
+                    baseController.IsActive = string.Equals(
+                        user.FindFirst("IsActive")?.Value, "true", StringComparison.OrdinalIgnoreCase);
+                }
+            }
         }
         public void OnActionExecuted(ActionExecutedContext context)
         {

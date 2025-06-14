@@ -35,5 +35,13 @@ namespace BA.Database.Repos.UserRepository
 
             return users;
         }
+
+        public async Task<User?> IsUserExistsAsync(string email, string mobileNumber)
+        {
+            var data = await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower() && u.MobileNumber == mobileNumber);
+
+            return data;
+
+        }
     }
 }
