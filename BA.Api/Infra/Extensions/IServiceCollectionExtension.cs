@@ -1,11 +1,13 @@
 ﻿using BA.Api.Infra.Authentication;
+using BA.Api.Infra.Validators.UserValidations;
 using BA.Database;
 using BA.Database.Infra;
+using BA.Database.Repos.NewsPapersReposiotry;
 using BA.Database.Repos.UserRepository;
 using BA.Database.Repos.UsersRepository;
 using BA.Service;
-using BA.Utility.AppSettings;
 using BA.Utility.Constant;
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using NetCore.AutoRegisterDi;
 using System.Reflection;
@@ -32,6 +34,7 @@ namespace BA.Api.Infra.Extensions
             services.AddTransient(typeof(IUserRepository), typeof(UserRepository));
             services.AddTransient(typeof(IUserLoginMappingRepository), typeof
                 (UserLoginMappingRepository));
+            services.AddTransient(typeof(INewsPaperRepository), typeof(NewsPaperRepository));
             services.AddTransient<SqlCommands>();
             services.AddScoped<IJwtProvider, JwtProvider>();
         }
@@ -45,6 +48,12 @@ namespace BA.Api.Infra.Extensions
             });
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
+        }
+
+        public static IServiceCollection AddAllFluentValidators(this IServiceCollection services)
+        {
+            services.AddValidatorsFromAssemblyContaining<UserValidator>();
+            return services;
         }
 
         public static void ConfigureCors(this IServiceCollection services, IConfiguration configuration)

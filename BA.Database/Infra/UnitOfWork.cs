@@ -1,4 +1,6 @@
-﻿using BA.Database.Repos.UserRepository;
+﻿using BA.Database.Repos.CustomerRepository;
+using BA.Database.Repos.NewsPapersReposiotry;
+using BA.Database.Repos.UserRepository;
 using BA.Database.Repos.UsersRepository;
 using Microsoft.EntityFrameworkCore.Storage;
 
@@ -10,14 +12,20 @@ namespace BA.Database.Infra
 
         public IUserRepository UserRepository { get; }
         public IUserLoginMappingRepository UserLoginMappingRepository { get; }
+        public INewsPaperRepository NewsPaperRepository { get; }
+        public ICustomerDetailsRepository CustomerDetailsRepository { get; }
 
         public UnitOfWork(BAContext context
             , IUserRepository userRepository
-            , IUserLoginMappingRepository userLoginMappingRepository)
+            , IUserLoginMappingRepository userLoginMappingRepository
+            , INewsPaperRepository newsPaperRepository
+            , ICustomerDetailsRepository customerDetailsRepository)
         {
             _context = context;
             UserRepository = userRepository;
             UserLoginMappingRepository = userLoginMappingRepository;
+            NewsPaperRepository = newsPaperRepository;
+            CustomerDetailsRepository = customerDetailsRepository;
         }
         public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
         {

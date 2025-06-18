@@ -25,5 +25,13 @@
   "BA357": "Alternate email address already exists.",
 
   "BA1001": "No record found.",
-  "BA1002": "Invalid UserId or Password."
+  "BA1002": "Invalid UserId or Password.",
+
+  "BA1003": "User name is required.",
+  "BA1004": "User name must be between 3 and 100 characters.",
+  "BA1005": "Email address is required.",
+  "BA1006": "Please enter valid email address.",
+  "BA1007": "Mobile number is required.",
+  "BA1008": "Please enter valid mobile number.",
+  "BA1009": "Please enter upto 100 charactors in address line.",
 }

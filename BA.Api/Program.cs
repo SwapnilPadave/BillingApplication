@@ -4,6 +4,7 @@ using BA.Api.Infra.Filters;
 using BA.Utility.AppSettings;
 using BA.Utility.Constant;
 using BA.Utility.Content;
+using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -19,21 +20,26 @@ namespace BA.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            var assembly = typeof(Program).Assembly;
+
             builder.Logging.ClearProviders();
             builder.Logging.AddConsole();
 
             ContentLoader.LanguageLoader(Directory.GetCurrentDirectory());
+            //builder.Services.AddValidatorsFromAssemblyContaining<UserValidator>();
 
             // Add services to the container.
-            builder.Services.AddControllersWithViews(options =>
+            builder.Services.AddControllers(options =>
             {
                 options.Filters.Add<ActionFilter>();
-            });
-
-            builder.Services.AddControllers().AddJsonOptions(options =>
+            })
+            .AddJsonOptions(options =>
             {
                 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
             });
+
+
+            //builder.Services.AddAllFluentValidators();
 
             builder.Services.Configure<ApiBehaviorOptions>(options =>
             {
@@ -43,8 +49,10 @@ namespace BA.Api
             builder.Services.RegisterRepositories();
             builder.Services.RegisterServices();
             builder.Services.ConfigureDatabase(builder.Configuration);
+            //builder.Services.AddAllFluentValidators();
             builder.Services.ConfigureCors(builder.Configuration);
             builder.Services.AddAutoMapper(typeof(Program));
+            builder.Services.AddValidatorsFromAssembly(assembly);
 
             builder.Services.AddEndpointsApiExplorer();
 
@@ -89,7 +97,7 @@ namespace BA.Api
                 app.UseSwaggerUI(c =>
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "BA API V1");
-                    c.RoutePrefix = string.Empty;
+                    //c.RoutePrefix = string.Empty;
                 });
             }
 

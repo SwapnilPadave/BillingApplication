@@ -30,6 +30,25 @@ namespace BA.Api.Infra.Filters
                         user.FindFirst("IsActive")?.Value, "true", StringComparison.OrdinalIgnoreCase);
                 }
             }
+
+            if (!context.ModelState.IsValid)
+            {
+                var errors = context.ModelState
+                    .Where(x => x.Value?.Errors.Count > 0)
+                    .ToDictionary(
+                        kvp => kvp.Key,
+                        kvp => kvp.Value!.Errors.Select(e => e.ErrorMessage).ToArray()
+                    );
+
+                context.Result = new JsonResult(new Dictionary<string, object>
+                                 {
+                                     { Constants.RESPONSE_MESSAGE_FIELD, "Validation failed" },
+                                     { Constants.RESPONSE_MODEL_STATE_ERRORS_FIELD, errors }
+                                 })
+                {
+                    StatusCode = (int)HttpStatusCode.PreconditionFailed
+                };
+            }
         }
         public void OnActionExecuted(ActionExecutedContext context)
         {

@@ -24,10 +24,15 @@ namespace BA.Api.Controllers
         [HttpPost("Add")]
         public async Task<Dictionary<string, object>> AddAsync([FromBody] AddUserRequest request, CancellationToken cancellationToken)
         {
+            if(!ModelState.IsValid)
+            {
+                return APIResponse("BA101", ModelState);
+            }
+
             var user = _mapper.Map<AddUserDto>(request);
             var result = await _userService.AddUserAsync(UserId, user, cancellationToken);
             if (result.IsSuccess)
-                return APIResponse("MSG100", result.Data!);
+                return APIResponse("BA100", result.Data!);
             return APIResponse(result.Error.ErrorMsg, null!);
         }
 
@@ -36,7 +41,7 @@ namespace BA.Api.Controllers
         {
             var result = await _userService.GetUsersAsync(cancellationToken);
             if (result.IsSuccess)
-                return APIResponse("MSG100", result.Data!);
+                return APIResponse("BA100", result.Data!);
             return APIResponse(result.Error.ErrorMsg, null!);
         }
 
@@ -45,7 +50,7 @@ namespace BA.Api.Controllers
         {
             var result = await _userService.GetUserByIdAsync(id, cancellationToken);
             if (result.IsSuccess)
-                return APIResponse("MSG100", result.Data!);
+                return APIResponse("BA100", result.Data!);
             return APIResponse(result.Error.ErrorMsg, null!);
         }
 
@@ -55,7 +60,7 @@ namespace BA.Api.Controllers
             var user = _mapper.Map<UpdateUserDto>(request);
             var result = await _userService.UpdateUserAsync(UserId, id, user, cancellationToken);
             if (result.IsSuccess)
-                return APIResponse("MSG100", result.Data!);
+                return APIResponse("BA100", result.Data!);
             return APIResponse(result.Error.ErrorMsg, null!);
         }
 
@@ -64,7 +69,7 @@ namespace BA.Api.Controllers
         {
             var result = await _userService.DeleteUserAsync(UserId, id, cancellationToken);
             if (result.IsSuccess)
-                return APIResponse("MSG100", result.Data!);
+                return APIResponse("BA100", result.Data!);
             return APIResponse(result.Error.ErrorMsg, null!);
         }
     }
