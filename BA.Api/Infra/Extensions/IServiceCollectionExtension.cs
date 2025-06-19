@@ -1,13 +1,16 @@
 ﻿using BA.Api.Infra.Authentication;
+using BA.Api.Infra.Filters;
 using BA.Api.Infra.Validators.UserValidations;
 using BA.Database;
 using BA.Database.Infra;
+using BA.Database.Repos.CustomerRepository;
 using BA.Database.Repos.NewsPapersReposiotry;
 using BA.Database.Repos.UserRepository;
 using BA.Database.Repos.UsersRepository;
 using BA.Service;
 using BA.Utility.Constant;
 using FluentValidation;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using NetCore.AutoRegisterDi;
 using System.Reflection;
@@ -35,8 +38,11 @@ namespace BA.Api.Infra.Extensions
             services.AddTransient(typeof(IUserLoginMappingRepository), typeof
                 (UserLoginMappingRepository));
             services.AddTransient(typeof(INewsPaperRepository), typeof(NewsPaperRepository));
+            services.AddTransient(typeof(ICustomerDetailsRepository), typeof(CustomerDetailsRepository));
+
             services.AddTransient<SqlCommands>();
             services.AddScoped<IJwtProvider, JwtProvider>();
+            services.AddTransient(typeof(FluentValidationActionFilter<>));
         }
 
         public static void ConfigureDatabase(this IServiceCollection services, IConfiguration configuration)
@@ -52,6 +58,8 @@ namespace BA.Api.Infra.Extensions
 
         public static IServiceCollection AddAllFluentValidators(this IServiceCollection services)
         {
+            services.AddScoped(typeof(FluentValidationActionFilter<>));
+            services.AddSingleton<IFilterProvider, FluentValidationFilterProvider>();
             services.AddValidatorsFromAssemblyContaining<UserValidator>();
             return services;
         }

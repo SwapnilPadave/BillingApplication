@@ -7,6 +7,7 @@ using BA.Utility.Content;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
@@ -52,7 +53,11 @@ namespace BA.Api
             //builder.Services.AddAllFluentValidators();
             builder.Services.ConfigureCors(builder.Configuration);
             builder.Services.AddAutoMapper(typeof(Program));
+            builder.Services.AddAllFluentValidators();
+
+            builder.Services.AddScoped(typeof(FluentValidationActionFilter<>));
             builder.Services.AddValidatorsFromAssembly(assembly);
+            builder.Services.AddSingleton<IFilterProvider, FluentValidationFilterProvider>();
 
             builder.Services.AddEndpointsApiExplorer();
 

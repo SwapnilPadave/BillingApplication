@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BA.Api.Infra.Filters;
 using BA.Api.Infra.Requests.NewsPaperRequests;
 using BA.Dtos.NewsPaperDto;
 using BA.Service.NewsPaper;
@@ -9,7 +10,7 @@ namespace BA.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     public class NewsPaperController : BaseController
     {
         private readonly INewsPaperService _newsPaperService;
@@ -41,10 +42,6 @@ namespace BA.Api.Controllers
         [HttpPost("Add")]
         public async Task<Dictionary<string, object>> AddAsync([FromBody] AddNewsPaperRequest request, CancellationToken cancellationToken)
         {
-            if (!ModelState.IsValid)
-            {
-                return APIResponse("BA101", ModelState);
-            }
             var newsPaper = _mapper.Map<AddNewsPaperDto>(request);
             var result = await _newsPaperService.AddNewsPaperAsync(UserId, newsPaper, cancellationToken);
             if (result.IsSuccess)
