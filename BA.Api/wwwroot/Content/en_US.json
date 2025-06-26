@@ -34,4 +34,8 @@
   "BA1007": "Mobile number is required.",
   "BA1008": "Please enter valid mobile number.",
   "BA1009": "Please enter upto 100 charactors in address line.",
+
+  "BA1100": "Customer added successfully.",
+  "BA1101": "Customer updated successfully.",
+  "BA1102": "Customer deleted successfully.",
 }
