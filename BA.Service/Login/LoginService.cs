@@ -70,8 +70,8 @@ namespace BA.Service.Login
                     return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA104")));
                 }
                 var userLogin = new UserLoginMapping();
-                userLogin.UserId = user.Email;
-                userLogin.Username = user.Name;
+                userLogin.UserId = Convert.ToString(user.Id);
+                userLogin.Username = user.Email;
                 userLogin.Password = Utils.Encrypt(user.MobileNumber);
                 userLogin.IsActive = true;
                 userLogin.CreatedBy = 1;

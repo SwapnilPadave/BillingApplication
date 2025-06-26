@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using BA.Api.Infra.Filters;
 using BA.Api.Infra.Requests.NewsPaperRequests;
 using BA.Dtos.NewsPaperDto;
 using BA.Service.NewsPaper;
@@ -10,7 +9,7 @@ namespace BA.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class NewsPaperController : BaseController
     {
         private readonly INewsPaperService _newsPaperService;

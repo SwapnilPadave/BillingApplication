@@ -6,7 +6,7 @@ namespace BA.Entities.Infra
     {
         [Key]
         public int Id { get; set; }
-        public DateTime ExceptionDateTime { get; set; } = DateTime.Now;
+        public DateTime? CreatedDate { get; set; } = DateTime.Now;
         public string ExceptionMessage { get; set; } = string.Empty;
         public string? ExceptionType { get; set; }
         public string? StackTrace { get; set; }

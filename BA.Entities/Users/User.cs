@@ -11,6 +11,5 @@ namespace BA.Entities.Users
         public string Address { get; set; } = string.Empty;
         public DateTime? DateOfBirth { get; set; }
         public int Age { get; set; }
-        //public UserLoginMapping? UserLoginMappings { get; set; }
     }
 }

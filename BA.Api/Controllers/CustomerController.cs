@@ -2,12 +2,14 @@
 using BA.Api.Infra.Requests.CustomerRequest;
 using BA.Dtos.CustomerDto;
 using BA.Service.Customer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BA.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CustomerController : BaseController
     {
         private readonly ICustomerService _customerService;

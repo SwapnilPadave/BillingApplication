@@ -31,17 +31,6 @@ namespace BA.Database
 
         public async Task<GetLoginDetails> GetLoginDetails(string userId, string password)
         {
-            //var data = new GetLoginDetails();
-            //var sqlParameters = new[]
-            //{
-            //    new SqlParameter("@UserId", userId),
-            //    new SqlParameter("@Password", password)
-            //};
-
-            //data = await SqlServiceHelper.ExecuteStoredProcedureSingleResultAsync<GetLoginDetails>(_context, "USP_GetUserLoginDetails", sqlParameters);
-
-            //return data ?? new GetLoginDetails();
-
             using (var connection = _context.Database.GetDbConnection())
             {
                 await connection.OpenAsync();

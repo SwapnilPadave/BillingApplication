@@ -1,0 +1,13 @@
+CREATE TABLE Login
+(
+Id INT IDENTITY(1,1) PRIMARY KEY,
+UserId NVARCHAR(50) NOT NULL,
+UserName NVARCHAR(50) NOT NULL,
+[Password] NVARCHAR(100) NOT NULL,
+IsAdmin BIT,
+CreatedBy INT,
+ModifiedBy INT,
+CreatedDate DATETIME NULL,
+ModifiedDate DATETIME NULL,
+IsActive BIT
+)
