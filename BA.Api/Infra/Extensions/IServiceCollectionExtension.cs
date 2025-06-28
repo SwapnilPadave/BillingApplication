@@ -75,7 +75,8 @@ namespace BA.Api.Infra.Extensions
                 c.AddPolicy(Constants.CORS_KEY, builder =>
                     {
                         builder
-                        .WithOrigins(urls!)
+                        //.WithOrigins(urls!)
+                        .AllowAnyOrigin()
                         .AllowAnyHeader()
                         .AllowAnyMethod();
                     });
