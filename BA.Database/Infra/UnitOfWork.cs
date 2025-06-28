@@ -1,4 +1,5 @@
-﻿using BA.Database.Repos.CustomerRepository;
+﻿using BA.Database.Repos.BillRepository;
+using BA.Database.Repos.CustomerRepository;
 using BA.Database.Repos.NewsPapersReposiotry;
 using BA.Database.Repos.UserRepository;
 using BA.Database.Repos.UsersRepository;
@@ -14,18 +15,21 @@ namespace BA.Database.Infra
         public IUserLoginMappingRepository UserLoginMappingRepository { get; }
         public INewsPaperRepository NewsPaperRepository { get; }
         public ICustomerDetailsRepository CustomerDetailsRepository { get; }
+        public IBillRepository BillRepository { get; }
 
         public UnitOfWork(BAContext context
             , IUserRepository userRepository
             , IUserLoginMappingRepository userLoginMappingRepository
             , INewsPaperRepository newsPaperRepository
-            , ICustomerDetailsRepository customerDetailsRepository)
+            , ICustomerDetailsRepository customerDetailsRepository
+            , IBillRepository billRepository)
         {
             _context = context;
             UserRepository = userRepository;
             UserLoginMappingRepository = userLoginMappingRepository;
             NewsPaperRepository = newsPaperRepository;
             CustomerDetailsRepository = customerDetailsRepository;
+            BillRepository = billRepository;
         }
         public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
         {

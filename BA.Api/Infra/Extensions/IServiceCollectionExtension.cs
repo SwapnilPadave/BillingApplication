@@ -3,6 +3,7 @@ using BA.Api.Infra.Filters;
 using BA.Api.Infra.Validators.UserValidations;
 using BA.Database;
 using BA.Database.Infra;
+using BA.Database.Repos.BillRepository;
 using BA.Database.Repos.CustomerRepository;
 using BA.Database.Repos.NewsPapersReposiotry;
 using BA.Database.Repos.UserRepository;
@@ -39,6 +40,7 @@ namespace BA.Api.Infra.Extensions
                 (UserLoginMappingRepository));
             services.AddTransient(typeof(INewsPaperRepository), typeof(NewsPaperRepository));
             services.AddTransient(typeof(ICustomerDetailsRepository), typeof(CustomerDetailsRepository));
+            services.AddTransient(typeof(IBillRepository), typeof(BillRepository));
 
             services.AddTransient<SqlCommands>();
             services.AddScoped<IJwtProvider, JwtProvider>();

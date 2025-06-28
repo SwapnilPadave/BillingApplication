@@ -1,4 +1,5 @@
-﻿using BA.Entities.Customer;
+﻿using BA.Entities.Bill;
+using BA.Entities.Customer;
 using BA.Entities.NewsPaper;
 using BA.Entities.Users;
 using Microsoft.EntityFrameworkCore;
@@ -14,5 +15,6 @@ namespace BA.Database
         public DbSet<UserLoginMapping> UserLoginMappings { get; set; }
         public DbSet<NewsPaperDetails> NewsPaperDetails { get; set; }
         public DbSet<CustomerDetails> CustomerDetails { get; set; }
+        public DbSet<CustomerBillDetails> CustomerBillDetails { get; set; }
     }
 }

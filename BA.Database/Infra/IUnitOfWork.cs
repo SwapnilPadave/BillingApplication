@@ -1,4 +1,5 @@
-﻿using BA.Database.Repos.CustomerRepository;
+﻿using BA.Database.Repos.BillRepository;
+using BA.Database.Repos.CustomerRepository;
 using BA.Database.Repos.NewsPapersReposiotry;
 using BA.Database.Repos.UserRepository;
 using BA.Database.Repos.UsersRepository;
@@ -12,6 +13,7 @@ namespace BA.Database.Infra
         public IUserLoginMappingRepository UserLoginMappingRepository { get; }
         public INewsPaperRepository NewsPaperRepository { get; }
         public ICustomerDetailsRepository CustomerDetailsRepository { get; }
+        public IBillRepository BillRepository { get; }
 
         // Methods for managing the database context and transactions
         public Task<bool> SaveChangesAsync(CancellationToken cancellationToken = default);
