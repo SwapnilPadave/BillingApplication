@@ -2,6 +2,7 @@
 using BA.Api.Infra.Requests.CustomerRequest;
 using BA.Dtos.CustomerDto;
 using BA.Service.Customer;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,13 +15,18 @@ namespace BA.Api.Controllers
     {
         private readonly ICustomerService _customerService;
         private readonly IMapper _mapper;
-        public CustomerController(ICustomerService customerService
-            , IMapper mapper)
+        private readonly IMediator _mediator;
+        public CustomerController(
+            ICustomerService customerService,
+            IMapper mapper,
+            IMediator mediator)
         {
             _customerService = customerService;
             _mapper = mapper;
+            _mediator = mediator;
         }
 
+        [AllowAnonymous]
         [HttpPost("Add")]
         public async Task<Dictionary<string, object>> AddAsync([FromBody] AddCustomerRequest customerDto)
         {
@@ -57,6 +63,7 @@ namespace BA.Api.Controllers
         }
 
         [HttpGet("GetAll")]
+        [Authorize(Roles = "Admin")]
         public async Task<Dictionary<string, object>> GetAllAsync()
         {
             var result = await _customerService.GetAllCustomersAsync();
@@ -75,6 +82,30 @@ namespace BA.Api.Controllers
             {
                 return APIResponse("BA1104", result.Data!);
             }
+            return APIResponse(result.Error.ErrorMsg, null!);
+        }
+
+        //Using Mediator Pattern
+        [AllowAnonymous]
+        [HttpGet("GetEmployeeByIdUsingMediator")]
+        public async Task<Dictionary<string, object>> GetEmployeeByIdUsingMediator(int id)
+        {
+            var result = await _mediator.Send(new GetCustomerByIdQuery(id));
+            if (result != null)
+            {
+                return APIResponse("BA1102", result);
+            }
+            return APIResponse("No record found.", null!);
+        }
+
+        [AllowAnonymous]
+        [HttpPost("AddEmployeeUsingMediator")]
+        public async Task<Dictionary<string, object>> AddEmployeeUsingMediator([FromBody] AddCustomerCommand command)
+        {
+            command.UserId = UserId;
+            var result = await _mediator.Send(command);
+            if (result.IsSuccess)
+                return APIResponse("BA1100", result.Data!);
             return APIResponse(result.Error.ErrorMsg, null!);
         }
     }

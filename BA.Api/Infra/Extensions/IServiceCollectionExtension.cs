@@ -4,8 +4,11 @@ using BA.Api.Infra.Validators.UserValidations;
 using BA.Database;
 using BA.Database.Infra;
 using BA.Database.Repos.BillRepository;
+using BA.Database.Repos.CustomerBillDetailsRepository;
 using BA.Database.Repos.CustomerRepository;
+using BA.Database.Repos.EmployeeRepository;
 using BA.Database.Repos.NewsPapersReposiotry;
+using BA.Database.Repos.TokenRepository;
 using BA.Database.Repos.UserRepository;
 using BA.Database.Repos.UsersRepository;
 using BA.Service;
@@ -41,6 +44,9 @@ namespace BA.Api.Infra.Extensions
             services.AddTransient(typeof(INewsPaperRepository), typeof(NewsPaperRepository));
             services.AddTransient(typeof(ICustomerDetailsRepository), typeof(CustomerDetailsRepository));
             services.AddTransient(typeof(IBillRepository), typeof(BillRepository));
+            services.AddTransient(typeof(IEmployeeRepository), typeof(EmployeeRepository));
+            services.AddTransient(typeof(ITokenRepository), typeof(TokenRepository));
+            services.AddTransient<ICustomerBillDetailsRepository, CustomerBillDetailsRepository>();
 
             services.AddTransient<SqlCommands>();
             services.AddScoped<IJwtProvider, JwtProvider>();

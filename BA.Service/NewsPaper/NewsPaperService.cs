@@ -20,7 +20,7 @@ namespace BA.Service.NewsPaper
 
         public async Task<Result> GetNewsPapersAsync(CancellationToken cancellationToken)
         {
-            var data = await _unitOfWork.NewsPaperRepository.GetAllAsync();
+            var data = await _unitOfWork.NewsPaperRepository.GetNewPaperListAsync();
             if (data == null || !data.Any())
             {
                 return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA1001")));
@@ -30,7 +30,7 @@ namespace BA.Service.NewsPaper
 
         public async Task<Result> GetNewsPaperByIdAsync(int id, CancellationToken cancellationToken)
         {
-            var data = await _unitOfWork.NewsPaperRepository.GetAsync(id);
+            var data = await _unitOfWork.NewsPaperRepository.GetNewsPaperByIdAsync(id);
             if (data == null)
             {
                 return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA1001")));

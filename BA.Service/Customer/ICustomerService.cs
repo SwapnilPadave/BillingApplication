@@ -11,5 +11,6 @@ namespace BA.Service.Customer
         Task<Result> DeleteCustomerAsync(int userId, int id);
         Task<Result> GetCustomerByIdAsync(int id);
         Task<Result> GetAllCustomersAsync();
+        Task<CustomerDetails> GetCustomerByIdForConsumApiAsync(int id);
     }
 }

@@ -3,6 +3,8 @@ using BA.Api.Infra.Authentication;
 using BA.Api.Infra.Requests.LoginRequest;
 using BA.Dtos.LoginDto;
 using BA.Service.Login;
+using BA.Service.Token;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -17,6 +19,7 @@ namespace BA.Api.Controllers
     public class LoginController : BaseController
     {
         private readonly ILoginService _loginService;
+        private readonly ITokenService _tokenService;
         private readonly JwtOptions _jwtOptions;
         private readonly IMapper _mapper;
         private readonly ILogger<LoginController> _logger;
@@ -24,12 +27,14 @@ namespace BA.Api.Controllers
         public LoginController(ILoginService loginService,
                                IMapper mapper,
                                IOptions<JwtOptions> options,
-                               ILogger<LoginController> logger)
+                               ILogger<LoginController> logger,
+                               ITokenService tokenService)
         {
             _loginService = loginService;
             _mapper = mapper;
             _jwtOptions = options.Value;
             _logger = logger;
+            _tokenService = tokenService;
         }
 
         [HttpPost("Login")]
@@ -42,15 +47,25 @@ namespace BA.Api.Controllers
 
             if (userData != null)
             {
+                //var claims = new List<Claim>
+                //{
+                //    new Claim("UserId", userData.UserId.ToString()),
+                //    new Claim("UserName", userData.UserName),
+                //    //new Claim("MobileNumber", userData.MobileNumber ?? ""),
+                //    //new Claim("EmailAddress", userData.EmailAddress ?? ""),
+                //    new Claim("IsActive", userData.IsActive.ToString().ToLower()),
+                //    new Claim("Admin", userData.Admin.ToString().ToLower()),
+                //    new Claim("Role", userData.Admin ? "Admin" : "User"),
+                //};
+
                 var claims = new List<Claim>
-                {
-                    new Claim("UserId", userData.UserId.ToString()),
-                    new Claim("UserName", userData.UserName),
-                    //new Claim("MobileNumber", userData.MobileNumber ?? ""),
-                    //new Claim("EmailAddress", userData.EmailAddress ?? ""),
-                    new Claim("IsActive", userData.IsActive.ToString().ToLower()),
-                    new Claim("Admin", userData.Admin.ToString().ToLower())
-                };
+                    {
+                        new Claim(ClaimTypes.NameIdentifier, userData.UserId.ToString()), // <-- fixed
+                        new Claim(ClaimTypes.Name, userData.UserName),                   // optional
+                        new Claim("IsActive", userData.IsActive.ToString().ToLower()),
+                        new Claim("Admin", userData.Admin.ToString().ToLower()),
+                        new Claim(ClaimTypes.Role, userData.Admin ? "Admin" : "User"),  // optional
+                    };
 
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key));
                 var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -64,6 +79,7 @@ namespace BA.Api.Controllers
                 );
 
                 var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+                await _tokenService.SaveTokenAsync(userData.UserId, tokenString, token.ValidTo, cancellationToken);
 
                 return APIResponse("BA100", new { Token = tokenString, Expiration = token.ValidTo });
             }
@@ -80,6 +96,16 @@ namespace BA.Api.Controllers
             var result = await _loginService.RegisterUserAsync(requetDto, cancellationToken);
             if (result.IsSuccess)
                 return APIResponse("BA107", result.Data!);
+            return APIResponse(result.Error.ErrorMsg, null!);
+        }
+
+        [HttpPost("Logout")]
+        public async Task<Dictionary<string, object>> Logout(CancellationToken cancellationToken)
+        {
+            ExtractUserContext();
+            var result = await _loginService.Logout(UserId, cancellationToken);
+            if (result.IsSuccess)
+                return APIResponse("BA102", null!);
             return APIResponse(result.Error.ErrorMsg, null!);
         }
 

@@ -11,7 +11,7 @@
         public const string APP_SETTINGS_KEY = "AppSettings";
         public const string CLIENT_APP_URL_KEY = "ClientAppUrl";
         public const string JWT_KEY = "Jwt";
-        public const string CORS_KEY = "AccessBlob";
+        public const string CORS_KEY = "AccessCORSKey";
         public const string BLOB_STORAGE_CONNECTION_STRING_KEY = "BlobStorageConnectionString";
         public const string SQL_CONNECTION_STRING_KEY = "SqlConnectionString";
         public const string ENCRYPTION_KEY = "ThisIsA16ByteKey";

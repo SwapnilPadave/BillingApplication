@@ -1,6 +1,9 @@
 ﻿using BA.Database.Repos.BillRepository;
+using BA.Database.Repos.CustomerBillDetailsRepository;
 using BA.Database.Repos.CustomerRepository;
+using BA.Database.Repos.EmployeeRepository;
 using BA.Database.Repos.NewsPapersReposiotry;
+using BA.Database.Repos.TokenRepository;
 using BA.Database.Repos.UserRepository;
 using BA.Database.Repos.UsersRepository;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -14,6 +17,9 @@ namespace BA.Database.Infra
         public INewsPaperRepository NewsPaperRepository { get; }
         public ICustomerDetailsRepository CustomerDetailsRepository { get; }
         public IBillRepository BillRepository { get; }
+        public IEmployeeRepository EmployeeRepository { get; }
+        public ITokenRepository TokenRepository { get; }
+        public ICustomerBillDetailsRepository CustomerBillDetailsRepository { get; }
 
         // Methods for managing the database context and transactions
         public Task<bool> SaveChangesAsync(CancellationToken cancellationToken = default);

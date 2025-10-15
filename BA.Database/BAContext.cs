@@ -1,6 +1,10 @@
 ﻿using BA.Entities.Bill;
 using BA.Entities.Customer;
+using BA.Entities.Departments;
+using BA.Entities.Employees;
 using BA.Entities.NewsPaper;
+using BA.Entities.Shift;
+using BA.Entities.Token;
 using BA.Entities.Users;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,5 +20,10 @@ namespace BA.Database
         public DbSet<NewsPaperDetails> NewsPaperDetails { get; set; }
         public DbSet<CustomerDetails> CustomerDetails { get; set; }
         public DbSet<CustomerBillDetails> CustomerBillDetails { get; set; }
+        public DbSet<JwtToken> JwtToken { get; set; }
+        public DbSet<Employee> Employees { get; set; }
+        public DbSet<Department> Departments { get; set; }
+        public DbSet<Shifts> Shifts { get; set; }
+        public DbSet<CustomerNewsPaperBillDetail> CustomerNewsPaperBillDetails { get; set; }
     }
 }

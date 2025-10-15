@@ -1,5 +1,6 @@
 ﻿using BA.Database;
 using BA.Database.Infra;
+using BA.Database.Repos.UserRepository;
 using BA.Dtos.LoginDto;
 using BA.Entities.Users;
 using BA.Service.Email;
@@ -26,12 +27,33 @@ namespace BA.Service.Login
         public async Task<GetLoginDetails> GetLoginDetails(string userId, string password, CancellationToken cancellationToken)
         {
             var encryptedPassword = Utils.Encrypt(password);
-            var data = await _sqlCommands.GetLoginDetails(userId, encryptedPassword);
-            if (data.UserId <= 0)
-            {
-                return null;
-            }
+            //var data = await _sqlCommands.GetLoginDetails(userId, encryptedPassword);
+            var data = await _unitOfWork.UserLoginMappingRepository.GetLoginDetailsAsync(userId, encryptedPassword);
+            //if (data.UserId <= 0)
+            //{
+            //    return null;
+            //}
             return data;
+        }
+
+        public async Task<Result> Logout(int userId, CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var userLogin = await _unitOfWork.TokenRepository.GetAllAsync(x => x.UserId == userId && x.IsActive);
+                foreach (var t in userLogin)
+                {
+                    t.IsActive = false;
+                    _unitOfWork.TokenRepository.Update(t);
+                }
+                await _unitOfWork.SaveChangesAsync();
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                await _sqlCommands.ExceptionLogToDatabase(ex);
+                return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA108")));
+            }
         }
 
         #region Otp generate code
@@ -70,7 +92,7 @@ namespace BA.Service.Login
                     return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA104")));
                 }
                 var userLogin = new UserLoginMapping();
-                userLogin.UserId = Convert.ToString(user.Id);
+                userLogin.UserId = user.Id;
                 userLogin.Username = user.Email;
                 userLogin.Password = Utils.Encrypt(user.MobileNumber);
                 userLogin.IsActive = true;

@@ -134,5 +134,10 @@ namespace BA.Service.Customer
                 return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA101")));
             }
         }
+
+        public async Task<CustomerDetails> GetCustomerByIdForConsumApiAsync(int id)
+        {
+            return await _unitOfWork.CustomerDetailsRepository.GetAsync(id);
+        }
     }
 }

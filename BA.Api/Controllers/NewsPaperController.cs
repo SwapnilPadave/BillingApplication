@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using BA.Api.Infra.Requests.NewsPaperRequests;
 using BA.Dtos.NewsPaperDto;
+using BA.Service.Employee;
 using BA.Service.NewsPaper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,11 +14,13 @@ namespace BA.Api.Controllers
     public class NewsPaperController : BaseController
     {
         private readonly INewsPaperService _newsPaperService;
+        private readonly IEmployeeService _employeeService;
         private readonly IMapper _mapper;
-        public NewsPaperController(INewsPaperService newsPaperService, IMapper mapper)
+        public NewsPaperController(INewsPaperService newsPaperService, IMapper mapper, IEmployeeService employeeService)
         {
             _newsPaperService = newsPaperService;
             _mapper = mapper;
+            _employeeService = employeeService;
         }
 
         [HttpGet("GetAll")]
@@ -65,6 +68,16 @@ namespace BA.Api.Controllers
             if (result.IsSuccess)
                 return APIResponse("BA100", result.Data!);
             return APIResponse(result.Error.ErrorMsg, null!);
+        }
+
+        [HttpGet("GetEmployees")]
+        [AllowAnonymous]
+        public async Task<Dictionary<string, object>> GetEmployeesAsync(CancellationToken cancellationToken)
+        {
+            var data = await _employeeService.GetEmployees();
+            if (data.IsSuccess)
+                return APIResponse("BA100", data.Data!);
+            return APIResponse(data.Error.ErrorMsg, null!);
         }
     }
 }

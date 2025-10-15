@@ -49,11 +49,10 @@ namespace BA.Api.Infra.Middleware
             {
                 case UnauthorizedAccessException:
 
-                    model.Message = ContentLoader.ReturnLanguageData("", Convert.ToString(context.Request.Headers[Constants.HEADER_LANGUAG_EFIELD]));
+                    model.Message = ContentLoader.ReturnLanguageData("Unauthorize", Convert.ToString(context.Request.Headers[Constants.HEADER_LANGUAG_EFIELD]));
                     model.StatusCode = (int)HttpStatusCode.Unauthorized;
                     break;
                 case ValidationException:
-
                     model.Message = ContentLoader.ReturnLanguageData(exception.Message, Convert.ToString(context.Request.Headers[Constants.HEADER_LANGUAG_EFIELD]));
                     model.StatusCode = (int)HttpStatusCode.PreconditionFailed;
                     break;

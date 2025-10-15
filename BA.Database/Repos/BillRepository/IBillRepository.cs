@@ -5,5 +5,6 @@ namespace BA.Database.Repos.BillRepository
 {
     public interface IBillRepository : IRepository<CustomerBillDetails>
     {
+        Task<IEnumerable<CustomerBillDetails>> GetAllCustomerBillsAsync();
     }
 }

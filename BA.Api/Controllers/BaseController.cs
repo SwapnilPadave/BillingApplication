@@ -13,6 +13,7 @@ namespace BA.Api.Controllers
         public virtual string? UserName { get; set; }
         public virtual bool IsAdmin { get; set; }
         public virtual bool IsActive { get; set; }
+        public virtual string? Role { get; set; }
 
         protected Dictionary<string, object> APIResponse(string msgCode, object result, string languageCode = "")
         {
@@ -24,18 +25,33 @@ namespace BA.Api.Controllers
             return response;
         }
 
+        //protected void ExtractUserContext()
+        //{
+        //    if (User?.Identity?.IsAuthenticated != true)
+        //        return;
+
+        //    var userIdClaim = User.FindFirst("UserId")?.Value;
+        //    if (int.TryParse(userIdClaim, out int userId))
+        //        UserId = userId;
+
+        //    UserName = User.FindFirst("UserName")?.Value ?? string.Empty;
+        //    IsAdmin = string.Equals(User.FindFirst("Admin")?.Value, "true", StringComparison.OrdinalIgnoreCase);
+        //    IsActive = string.Equals(User.FindFirst("IsActive")?.Value, "true", StringComparison.OrdinalIgnoreCase);
+        //    Role = User.FindFirst("Role")?.Value ?? string.Empty;
+        //}
         protected void ExtractUserContext()
         {
             if (User?.Identity?.IsAuthenticated != true)
                 return;
 
-            var userIdClaim = User.FindFirst("UserId")?.Value;
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (int.TryParse(userIdClaim, out int userId))
                 UserId = userId;
 
-            UserName = User.FindFirst("UserName")?.Value ?? string.Empty;
+            UserName = User.FindFirst(ClaimTypes.Name)?.Value ?? string.Empty;
             IsAdmin = string.Equals(User.FindFirst("Admin")?.Value, "true", StringComparison.OrdinalIgnoreCase);
             IsActive = string.Equals(User.FindFirst("IsActive")?.Value, "true", StringComparison.OrdinalIgnoreCase);
+            Role = User.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
         }
     }
 }

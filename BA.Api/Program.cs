@@ -1,6 +1,8 @@
 ﻿using BA.Api.Infra.Authentication;
 using BA.Api.Infra.Extensions;
 using BA.Api.Infra.Filters;
+using BA.Api.Infra.Middleware;
+using BA.Database.Repos.TokenRepository;
 using BA.Utility.AppSettings;
 using BA.Utility.Constant;
 using BA.Utility.Content;
@@ -9,9 +11,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.IdentityModel.Tokens;
+using QuestPDF.Infrastructure;
+using System.Reflection;
 using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
+using MediatR;
 
 namespace BA.Api
 {
@@ -25,6 +30,8 @@ namespace BA.Api
 
             builder.Logging.ClearProviders();
             builder.Logging.AddConsole();
+
+            QuestPDF.Settings.License = LicenseType.Community;
 
             ContentLoader.LanguageLoader(Directory.GetCurrentDirectory());
             //builder.Services.AddValidatorsFromAssemblyContaining<UserValidator>();
@@ -46,6 +53,9 @@ namespace BA.Api
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
+            //builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
+
+            builder.Services.AddMediatR(config => config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
             builder.Services.RegisterRepositories();
             builder.Services.RegisterServices();
@@ -60,7 +70,7 @@ namespace BA.Api
             builder.Services.AddSingleton<IFilterProvider, FluentValidationFilterProvider>();
 
             builder.Services.AddEndpointsApiExplorer();
-
+            //builder.Services.AddJWTAuthentication(builder.Configuration);
             builder.Services.AddSwaggerWithJwtSupport();
 
             builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection(Constants.SMTPSETTINGS_KEY));
@@ -69,6 +79,7 @@ namespace BA.Api
 
             var jwtSettings = builder.Configuration.GetSection(Constants.JWT_KEY).Get<JwtOptions>();
 
+            #region MyRegion
             builder.Services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -89,7 +100,35 @@ namespace BA.Api
                     NameClaimType = ClaimTypes.Name,
                     RoleClaimType = ClaimTypes.Role
                 };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnTokenValidated = async context =>
+                    {
+                        // Get user ID from token claims
+                        var userIdClaim = context.Principal?.FindFirst(ClaimTypes.NameIdentifier);
+                        if (userIdClaim == null)
+                        {
+                            context.Fail("Invalid token: UserId missing.");
+                            return;
+                        }
+
+                        var userId = int.Parse(userIdClaim.Value);
+
+                        // Resolve your repository to check IsActive
+                        var tokenRepo = context.HttpContext.RequestServices.GetRequiredService<ITokenRepository>();
+                        var userToken = await tokenRepo.GetAsync(userId);
+
+                        if (userToken == null || !userToken.IsActive)
+                        {
+                            context.Fail("Token is inactive.");
+                        }
+                    }
+                };
             });
+            #endregion
+
+
 
             builder.Services.AddAuthorization();
 
@@ -106,6 +145,7 @@ namespace BA.Api
                 });
             }
 
+            app.UseMiddleware<ExceptionMiddleware>();
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseCors(Constants.CORS_KEY);

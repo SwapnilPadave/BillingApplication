@@ -1,6 +1,12 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using BA.Api.Infra.Authentication;
+using BA.Api.Infra.Filters;
+using BA.Database.Repos.TokenRepository;
+using BA.Utility.Constant;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using System.Runtime.CompilerServices;
+using System.Security.Claims;
 using System.Text;
 
 namespace BA.Api.Infra.Extensions
@@ -40,6 +46,58 @@ namespace BA.Api.Infra.Extensions
                           new List<string>()
                       }
                   });
+                c.OperationFilter<AuthorizeCheckOperationFilter>();
+            });
+        }
+
+        public static void AddJWTAuthentication(this IServiceCollection services, IConfiguration configuration)
+        {
+            var jwtSettings = configuration.GetSection(Constants.JWT_KEY).Get<JwtOptions>();
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = jwtSettings?.Issuer,
+                    ValidAudience = jwtSettings?.Audience,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings?.Key!)),
+
+                    NameClaimType = ClaimTypes.Name,
+                    RoleClaimType = ClaimTypes.Role
+                };
+
+                options.Events = new JwtBearerEvents
+                {
+                    OnTokenValidated = async context =>
+                    {
+                        // Get user ID from token claims
+                        var userIdClaim = context.Principal?.FindFirst(ClaimTypes.NameIdentifier);
+                        if (userIdClaim == null)
+                        {
+                            context.Fail("Invalid token: UserId missing.");
+                            return;
+                        }
+
+                        var userId = int.Parse(userIdClaim.Value);
+
+                        // Resolve your repository to check IsActive
+                        var tokenRepo = context.HttpContext.RequestServices.GetRequiredService<ITokenRepository>();
+                        var userToken = await tokenRepo.GetAsync(userId);
+
+                        if (userToken == null || !userToken.IsActive)
+                        {
+                            context.Fail("Token is inactive.");
+                        }
+                    }
+                };
             });
         }
 
