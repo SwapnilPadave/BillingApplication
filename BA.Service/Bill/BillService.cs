@@ -36,11 +36,11 @@ namespace BA.Service.Bill
                     ToDate = dto.ToDate,
                     TotalDays = dto.TotalDays,
                     ServiceCharge = dto.ServiceCharge,
-                    TotalAmount = CalculateTotalAmount(dto.NewsPaperIdAndAmount),
+                    TotalAmount = 0,
                     IsBillPaid = false,
                     NewsPaperIds = string.Join(",", dto.NewsPaperIdAndAmount.Select(n => n.Id)),
                     CreatedBy = userId,
-                    CreatedDate = DateTime.UtcNow,
+                    CreatedDate = DateTime.Now,
                     IsActive = true
                 };
 
@@ -51,27 +51,37 @@ namespace BA.Service.Bill
 
                 foreach (var item in dto.NewsPaperIdAndAmount)
                 {
+                    var nAmount = CalculateDayWiseTotalAmount(item.NormalDays, item.NormalDayAmount);
+                    var sunAmount = CalculateDayWiseTotalAmount(item.SundayDays, item.SundayAmount);
+                    var satAmount = CalculateDayWiseTotalAmount(item.SaturdayDays, item.SaturdayAmount);
+                    var speAmount = CalculateDayWiseTotalAmount(item.SpecialDays, item.SpecialDayAmount);
+
                     var paperBillDetails = new CustomerNewsPaperBillDetail
                     {
                         CustomerId = result.Id,
                         NewsPaperId = item.Id,
                         NormalDays = item.NormalDays,
                         Sundays = item.SundayDays,
-                        Saturday= item.SaturdayDays,
+                        Saturday = item.SaturdayDays,
                         SpecialDays = item.SpecialDays,
                         TotalDays = item.NormalDays + item.SundayDays + item.SaturdayDays + item.SpecialDays,
-                        NormalDayAmount = item.NormalDayAmount,
-                        SundayAmount = item.SundayAmount,
-                        SaturdayAmount = item.SaturdayAmount,
-                        SpecialDayAmount = item.SpecialDayAmount,
-                        TotalAmount = item.NormalDayAmount + item.SundayAmount + item.SaturdayAmount + item.SpecialDayAmount,
+                        NormalDayAmount = nAmount,
+                        SundayAmount = sunAmount,
+                        SaturdayAmount = satAmount,
+                        SpecialDayAmount = speAmount,
+                        TotalAmount = nAmount + sunAmount + satAmount + speAmount,
                         CreatedBy = userId,
-                        CreatedDate = DateTime.UtcNow
+                        CreatedDate = DateTime.Now
                     };
                     newsPaperBillDetails.Add(paperBillDetails);
                 }
                 await _unitOfWork.CustomerBillDetailsRepository.AddRangeAsync(newsPaperBillDetails);
+
+                //For update total amount in main table after all calculations
+                result.TotalAmount = CalculateTotalAmount(newsPaperBillDetails);
+                _unitOfWork.BillRepository.Update(result);
                 await _unitOfWork.SaveChangesAsync();
+
                 await transaction.CommitAsync();
 
                 //Generate PDF Bill and save to folder location.
@@ -119,11 +129,11 @@ namespace BA.Service.Bill
                 billDetails.ToDate = dto.ToDate;
                 billDetails.TotalDays = dto.TotalDays;
                 billDetails.ServiceCharge = dto.ServiceCharge;
-                billDetails.TotalAmount = CalculateTotalAmount(dto.NewsPaperIdAndAmount);
+                billDetails.TotalAmount = 0;
                 billDetails.IsBillPaid = dto.IsBillPaid;
                 billDetails.NewsPaperIds = string.Join(",", dto.NewsPaperIdAndAmount.Select(n => n.Id));
                 billDetails.ModifiedBy = userId;
-                billDetails.ModifiedDate = DateTime.UtcNow;
+                billDetails.ModifiedDate = DateTime.Now;
 
                 await _unitOfWork.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -161,13 +171,6 @@ namespace BA.Service.Bill
                 await _sqlCommand.ExceptionLogToDatabase(ex);
                 return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA101")));
             }
-        }
-
-        private decimal CalculateTotalAmount(List<NewsPaperIdAndAmount> dto)
-        {
-            decimal totalAmount = dto.Sum(x => x.SpecialDayAmount + x.SundayAmount + x.SaturdayAmount + x.NormalDayAmount);
-
-            return totalAmount;
         }
 
         public Dictionary<string, int> GetSatAndSunCount(DateTime fromDate, DateTime toDate, int specialDays = 0)
@@ -214,9 +217,9 @@ namespace BA.Service.Bill
                     var newsP = new NewsPaperDetailsDto()
                     {
                         NewsPaperId = paperId.BillId,
-                        NewsPaperName = paperId.BillName,
+                        NewsPaperName = paperId.CustomerName,
                         Quantity = data.TotalDays,
-                        Price = paperId.Amount
+                        Price = paperId.TotalAmount
                     };
                     billsDetails.Add(newsP);
                 }
@@ -355,6 +358,18 @@ namespace BA.Service.Bill
             var pdfBytes = document.GeneratePdf();
             await File.WriteAllBytesAsync(filePath, pdfBytes);
             return pdfBytes;
+        }
+        private decimal CalculateTotalAmount(List<CustomerNewsPaperBillDetail> dto)
+        {
+            decimal totalAmount = dto.Sum(x => x.SpecialDayAmount + x.SundayAmount + x.SaturdayAmount + x.NormalDayAmount);
+
+            return totalAmount;
+        }
+
+        private decimal CalculateDayWiseTotalAmount(int days, decimal amount)
+        {
+            var totalAmount = days * amount;
+            return totalAmount;
         }
     }
 }

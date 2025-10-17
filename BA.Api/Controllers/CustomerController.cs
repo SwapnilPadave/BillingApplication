@@ -63,7 +63,6 @@ namespace BA.Api.Controllers
         }
 
         [HttpGet("GetAll")]
-        [Authorize(Roles = "Admin")]
         public async Task<Dictionary<string, object>> GetAllAsync()
         {
             var result = await _customerService.GetAllCustomersAsync();
@@ -74,7 +73,7 @@ namespace BA.Api.Controllers
             return APIResponse(result.Error.ErrorMsg, null!);
         }
 
-        [HttpDelete("Delete")]
+        [HttpPost("Delete")]
         public async Task<Dictionary<string, object>> DeleteAsync(int id)
         {
             var result = await _customerService.DeleteCustomerAsync(UserId, id);

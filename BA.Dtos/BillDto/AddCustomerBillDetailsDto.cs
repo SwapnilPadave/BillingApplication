@@ -16,13 +16,13 @@
     public class NewsPaperIdAndAmount
     {
         public int Id { get; set; }
-        public int NormalDays { get; set; }
-        public int SundayDays { get; set; }
-        public int SaturdayDays { get; set; }
-        public int SpecialDays { get; set; }
-        public decimal NormalDayAmount { get; set; }
-        public decimal SundayAmount { get; set; }
-        public decimal SaturdayAmount { get; set; }
-        public decimal SpecialDayAmount { get; set; }
+        public int NormalDays { get; set; } = 0;
+        public int SundayDays { get; set; } = 0;
+        public int SaturdayDays { get; set; } = 0;
+        public int SpecialDays { get; set; } = 0;
+        public decimal NormalDayAmount { get; set; } = 0;
+        public decimal SundayAmount { get; set; } = 0;
+        public decimal SaturdayAmount { get; set; } = 0;
+        public decimal SpecialDayAmount { get; set; } = 0;
     }
 }

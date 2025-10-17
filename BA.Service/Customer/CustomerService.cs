@@ -4,6 +4,7 @@ using BA.Dtos.CustomerDto;
 using BA.Entities.Customer;
 using BA.Utility.Content;
 using BA.Utility.Result;
+using System.Linq;
 
 namespace BA.Service.Customer
 {
@@ -29,7 +30,7 @@ namespace BA.Service.Customer
                     RoomNo = customerDto.RoomNo,
                     AreaName = customerDto.AreaName,
                     CreatedBy = userId,
-                    CreatedDate = DateTime.UtcNow,
+                    CreatedDate = DateTime.Now,
                     IsActive = true
                 };
                 await _unitOfWork.CustomerDetailsRepository.AddAsync(customerDetails);
@@ -50,7 +51,7 @@ namespace BA.Service.Customer
             var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
-                var customerDetails = await _unitOfWork.CustomerDetailsRepository.GetAsync(id);
+                var customerDetails = await _unitOfWork.CustomerDetailsRepository.GetAsync(customerDto.Id);
                 if (customerDetails == null)
                 {
                     return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA1001")));
@@ -58,8 +59,9 @@ namespace BA.Service.Customer
                 customerDetails.BuildingName = customerDto.BuildingName;
                 customerDetails.RoomNo = customerDto.RoomNo;
                 customerDetails.AreaName = customerDto.AreaName;
+                customerDetails.IsActive = true;
                 customerDetails.ModifiedBy = userId;
-                customerDetails.ModifiedDate = DateTime.UtcNow;
+                customerDetails.ModifiedDate = DateTime.Now;
                 _unitOfWork.CustomerDetailsRepository.Update(customerDetails);
                 await _unitOfWork.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -85,7 +87,7 @@ namespace BA.Service.Customer
                 }
                 customerDetails.IsActive = false;
                 customerDetails.ModifiedBy = userId;
-                customerDetails.ModifiedDate = DateTime.UtcNow;
+                customerDetails.ModifiedDate = DateTime.Now;
                 _unitOfWork.CustomerDetailsRepository.Update(customerDetails);
                 await _unitOfWork.SaveChangesAsync();
                 await transaction.CommitAsync();
@@ -122,6 +124,7 @@ namespace BA.Service.Customer
             try
             {
                 var customerDetailsList = await _unitOfWork.CustomerDetailsRepository.GetAllAsync();
+                    //GetAllAsync(c => c.IsActive);
                 if (customerDetailsList == null || !customerDetailsList.Any())
                 {
                     return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA1001")));

@@ -16,57 +16,40 @@ namespace BA.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class LoginController : BaseController
+    public class AuthController : BaseController
     {
         private readonly ILoginService _loginService;
         private readonly ITokenService _tokenService;
         private readonly JwtOptions _jwtOptions;
         private readonly IMapper _mapper;
-        private readonly ILogger<LoginController> _logger;
-
-        public LoginController(ILoginService loginService,
-                               IMapper mapper,
-                               IOptions<JwtOptions> options,
-                               ILogger<LoginController> logger,
-                               ITokenService tokenService)
+        private readonly ILogger<AuthController> _logger;
+        public AuthController(ILoginService loginService, ITokenService tokenService, IOptions<JwtOptions> jwtOptions, ILogger<AuthController> logger, IMapper mapper)
         {
             _loginService = loginService;
-            _mapper = mapper;
-            _jwtOptions = options.Value;
-            _logger = logger;
             _tokenService = tokenService;
+            _jwtOptions = jwtOptions.Value;
+            _logger = logger;
+            _mapper = mapper;
         }
 
         [HttpPost("Login")]
         public async Task<Dictionary<string, object>> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
         {
-            _logger.LogInformation("🔐 Login request received for UserId: {UserId}", request.UserId);
-            _logger.LogInformation("🔑 JWT Key used for signing (debug only): {Key}", _jwtOptions.Key);
-
             var userData = await _loginService.GetLoginDetails(request.UserId, request.Password, cancellationToken);
-
-            if (userData != null)
+            if (userData == null)
             {
-                //var claims = new List<Claim>
-                //{
-                //    new Claim("UserId", userData.UserId.ToString()),
-                //    new Claim("UserName", userData.UserName),
-                //    //new Claim("MobileNumber", userData.MobileNumber ?? ""),
-                //    //new Claim("EmailAddress", userData.EmailAddress ?? ""),
-                //    new Claim("IsActive", userData.IsActive.ToString().ToLower()),
-                //    new Claim("Admin", userData.Admin.ToString().ToLower()),
-                //    new Claim("Role", userData.Admin ? "Admin" : "User"),
-                //};
-
+                return APIResponse("BA104", null!);
+            }
+            else
+            {
                 var claims = new List<Claim>
-                    {
-                        new Claim(ClaimTypes.NameIdentifier, userData.UserId.ToString()), // <-- fixed
-                        new Claim(ClaimTypes.Name, userData.UserName),                   // optional
-                        new Claim("IsActive", userData.IsActive.ToString().ToLower()),
-                        new Claim("Admin", userData.Admin.ToString().ToLower()),
-                        new Claim(ClaimTypes.Role, userData.Admin ? "Admin" : "User"),  // optional
-                    };
-
+                {
+                    new Claim("UserId", userData.UserId.ToString()),
+                    new Claim("UserName", userData.UserName),
+                    new Claim("IsActive", userData.IsActive.ToString().ToLower()),
+                    new Claim("Admin", userData.Admin.ToString().ToLower()),
+                    new Claim("Role", userData.Admin?"Admin":"User")
+                };
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.Key));
                 var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
@@ -77,18 +60,14 @@ namespace BA.Api.Controllers
                     expires: DateTime.Now.AddMinutes(_jwtOptions.ExpiryMinutes),
                     signingCredentials: creds
                 );
-
+                var expireTime = DateTime.Now.AddMinutes(_jwtOptions.ExpiryMinutes);
                 var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-                await _tokenService.SaveTokenAsync(userData.UserId, tokenString, token.ValidTo, cancellationToken);
+                await _tokenService.SaveTokenAsync(userData.UserId, tokenString, expireTime, cancellationToken);
+                //Console.WriteLine($"Generated JWT: {tokenString}");
 
                 return APIResponse("BA100", new { Token = tokenString, Expiration = token.ValidTo });
             }
-            else
-            {
-                return APIResponse("BA101", null!);
-            }
         }
-
         [HttpPost("Register")]
         public async Task<Dictionary<string, object>> Register([FromBody] RegisterUserRequest request, CancellationToken cancellationToken)
         {
@@ -99,27 +78,15 @@ namespace BA.Api.Controllers
             return APIResponse(result.Error.ErrorMsg, null!);
         }
 
+        [Authorize]
         [HttpPost("Logout")]
         public async Task<Dictionary<string, object>> Logout(CancellationToken cancellationToken)
         {
             ExtractUserContext();
             var result = await _loginService.Logout(UserId, cancellationToken);
             if (result.IsSuccess)
-                return APIResponse("BA102", null!);
+                return APIResponse("BA100", null!);
             return APIResponse(result.Error.ErrorMsg, null!);
-        }
-
-        [HttpGet("GetInfo")]
-        public Dictionary<string, object> GetInfo()
-        {
-            ExtractUserContext();
-            return APIResponse("BA100", new
-            {
-                UserId,
-                UserName,
-                IsAdmin,
-                IsActive
-            });
         }
     }
 }

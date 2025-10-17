@@ -9,6 +9,7 @@ namespace BA.Api.Infra.AutoMapper
         public CustomerMappingProfile()
         {
             CreateMap<AddCustomerRequest, AddCustomerDto>().ReverseMap();
+            CreateMap<UpdateCustomerRequest, UpdateCustomerDto>().ReverseMap();
         }
     }
 }

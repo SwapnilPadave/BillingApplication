@@ -29,10 +29,23 @@ namespace BA.Service.Login
             var encryptedPassword = Utils.Encrypt(password);
             //var data = await _sqlCommands.GetLoginDetails(userId, encryptedPassword);
             var data = await _unitOfWork.UserLoginMappingRepository.GetLoginDetailsAsync(userId, encryptedPassword);
-            //if (data.UserId <= 0)
-            //{
-            //    return null;
-            //}
+
+            // Deactivate previous active tokens on new login
+            try
+            {
+                var userLogin = await _unitOfWork.TokenRepository.GetAllAsync(x => x.UserId == data.UserId && x.IsActive);
+                foreach (var t in userLogin)
+                {
+                    t.IsActive = false;
+                    _unitOfWork.TokenRepository.Update(t);
+                }
+                await _unitOfWork.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                await _sqlCommands.ExceptionLogToDatabase(ex);
+            }
+
             return data;
         }
 

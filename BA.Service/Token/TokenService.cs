@@ -20,7 +20,7 @@ namespace BA.Service.Token
                     UserId = userId,
                     Token = jwtToken,
                     ExpireAt = expireAt,
-                    CreatedDate = DateTime.UtcNow,
+                    CreatedDate = DateTime.Now,
                     IsActive = true
                 };
 

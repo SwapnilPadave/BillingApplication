@@ -41,7 +41,7 @@ namespace BA.Utility.Content
             }
             catch
             {
-                Console.WriteLine("Exception Multilingual Data:" + key.ToString());
+                //Console.WriteLine("Exception Multilingual Data:" + key.ToString());
                 return key;
             }
             finally

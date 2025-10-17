@@ -1,5 +1,4 @@
-﻿using BA.Api.Infra.Authentication;
-using BA.Api.Infra.Filters;
+﻿using BA.Api.Infra.Filters;
 using BA.Api.Infra.Validators.UserValidations;
 using BA.Database;
 using BA.Database.Infra;
@@ -49,7 +48,7 @@ namespace BA.Api.Infra.Extensions
             services.AddTransient<ICustomerBillDetailsRepository, CustomerBillDetailsRepository>();
 
             services.AddTransient<SqlCommands>();
-            services.AddScoped<IJwtProvider, JwtProvider>();
+            //services.AddScoped<IJwtProvider, JwtProvider>();
             services.AddTransient(typeof(FluentValidationActionFilter<>));
         }
 

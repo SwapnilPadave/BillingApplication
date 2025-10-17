@@ -2,21 +2,15 @@
 using BA.Api.Infra.Extensions;
 using BA.Api.Infra.Filters;
 using BA.Api.Infra.Middleware;
-using BA.Database.Repos.TokenRepository;
 using BA.Utility.AppSettings;
 using BA.Utility.Constant;
 using BA.Utility.Content;
 using FluentValidation;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.IdentityModel.Tokens;
 using QuestPDF.Infrastructure;
 using System.Reflection;
-using System.Security.Claims;
-using System.Text;
 using System.Text.Json.Serialization;
-using MediatR;
 
 namespace BA.Api
 {
@@ -34,7 +28,6 @@ namespace BA.Api
             QuestPDF.Settings.License = LicenseType.Community;
 
             ContentLoader.LanguageLoader(Directory.GetCurrentDirectory());
-            //builder.Services.AddValidatorsFromAssemblyContaining<UserValidator>();
 
             // Add services to the container.
             builder.Services.AddControllers(options =>
@@ -46,14 +39,10 @@ namespace BA.Api
                 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
             });
 
-
-            //builder.Services.AddAllFluentValidators();
-
             builder.Services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
             });
-            //builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
 
             builder.Services.AddMediatR(config => config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
@@ -70,67 +59,16 @@ namespace BA.Api
             builder.Services.AddSingleton<IFilterProvider, FluentValidationFilterProvider>();
 
             builder.Services.AddEndpointsApiExplorer();
-            //builder.Services.AddJWTAuthentication(builder.Configuration);
-            builder.Services.AddSwaggerWithJwtSupport();
+
+            builder.Services.AddSwaggerWithJwtAuthenticationSupport();
+            //IdentityModelEventSource.ShowPII = true;
+            builder.Services.AddJwtAuthentication(builder.Configuration);
 
             builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection(Constants.SMTPSETTINGS_KEY));
 
             builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(Constants.JWT_KEY));
 
             var jwtSettings = builder.Configuration.GetSection(Constants.JWT_KEY).Get<JwtOptions>();
-
-            #region MyRegion
-            builder.Services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = jwtSettings?.Issuer,
-                    ValidAudience = jwtSettings?.Audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings?.Key!)),
-
-                    NameClaimType = ClaimTypes.Name,
-                    RoleClaimType = ClaimTypes.Role
-                };
-
-                options.Events = new JwtBearerEvents
-                {
-                    OnTokenValidated = async context =>
-                    {
-                        // Get user ID from token claims
-                        var userIdClaim = context.Principal?.FindFirst(ClaimTypes.NameIdentifier);
-                        if (userIdClaim == null)
-                        {
-                            context.Fail("Invalid token: UserId missing.");
-                            return;
-                        }
-
-                        var userId = int.Parse(userIdClaim.Value);
-
-                        // Resolve your repository to check IsActive
-                        var tokenRepo = context.HttpContext.RequestServices.GetRequiredService<ITokenRepository>();
-                        var userToken = await tokenRepo.GetAsync(userId);
-
-                        if (userToken == null || !userToken.IsActive)
-                        {
-                            context.Fail("Token is inactive.");
-                        }
-                    }
-                };
-            });
-            #endregion
-
-
-
-            builder.Services.AddAuthorization();
 
             var app = builder.Build();
 
@@ -141,7 +79,6 @@ namespace BA.Api
                 app.UseSwaggerUI(c =>
                 {
                     c.SwaggerEndpoint("/swagger/v1/swagger.json", "BA API V1");
-                    //c.RoutePrefix = string.Empty;
                 });
             }
 
@@ -149,6 +86,16 @@ namespace BA.Api
             app.UseHttpsRedirection();
             app.UseRouting();
             app.UseCors(Constants.CORS_KEY);
+
+            #region For jwt header debug purpose
+            //app.Use(async (context, next) =>
+            //{
+            //    var authHeader = context.Request.Headers["Authorization"].ToString();
+            //    Console.WriteLine($"Authorization header: {authHeader}");
+            //    await next.Invoke();
+            //}); 
+            #endregion
+
             app.UseAuthentication();
             app.UseAuthorization();
 

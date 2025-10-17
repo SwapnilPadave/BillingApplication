@@ -82,6 +82,24 @@ namespace BA.Api.Controllers
             var result = _billService.GetSatAndSunCount(requestDto.FromDate, requestDto.ToDate, requestDto.SpecialDays);
             return APIResponse("BA100", result);
         }
+
+        #region different ways to call async method into sync method.
+        [HttpGet("Test")]
+        public async Task<Dictionary<string, object>> Test()
+        {
+            int id = 0;
+            var result = _billService.GetCustomerBillById(id).GetAwaiter().GetResult();
+
+            var result1 = _billService.GetCustomerBillById(id).Result;
+
+            _billService.GetCustomerBillById(id).Wait();
+            Task.WaitAll();
+
+            var result2 = Task.Run(() => _billService.GetCustomerBillById(id)).GetAwaiter().GetResult();
+
+            return APIResponse("", result);
+        }
+        #endregion
     }
 }
 public class DateRequestDto
