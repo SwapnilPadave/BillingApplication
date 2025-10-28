@@ -9,6 +9,7 @@ namespace BA.Entities.Bill
         [Key]
         public int Id { get; set; }
         public int CustomerId { get; set; }
+        public int BillId { get; set; }
         public int NewsPaperId { get; set; }
         public int NormalDays { get; set; }
         public int Sundays { get; set; }

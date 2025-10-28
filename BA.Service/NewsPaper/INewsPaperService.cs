@@ -10,5 +10,6 @@ namespace BA.Service.NewsPaper
         Task<Result> AddNewsPaperAsync(int userId, AddNewsPaperDto dto, CancellationToken cancellationToken);
         Task<Result> UpdateNewsPaperAsync(int userId, int id, UpdateNewsPaperDto dto, CancellationToken cancellationToken);
         Task<Result> DeleteNewsPaperAsync(int userId, int id, CancellationToken cancellationToken);
+        Task<Result> ActivateOrDeactivateAsync(int userId, int id, bool isActive, CancellationToken cancellationToken);
     }
 }

@@ -26,7 +26,7 @@ namespace BA.Api.Controllers
             _mediator = mediator;
         }
 
-        [AllowAnonymous]
+        //[AllowAnonymous]
         [HttpPost("Add")]
         public async Task<Dictionary<string, object>> AddAsync([FromBody] AddCustomerRequest customerDto)
         {

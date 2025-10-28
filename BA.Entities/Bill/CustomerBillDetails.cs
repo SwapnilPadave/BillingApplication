@@ -5,6 +5,7 @@ namespace BA.Entities.Bill
     [Table("CustomerBillDetails")]
     public class CustomerBillDetails : AuditProperties
     {
+        public int CustomerId { get; set; }
         public string CustomerName { get; set; } = string.Empty;
         public string CustomerAddress { get; set; } = string.Empty;
         public string NewsPaperIds { get; set; } = string.Empty;

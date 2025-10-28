@@ -69,7 +69,7 @@ namespace BA.Service.NewsPaper
             var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
             try
             {
-                var newsPaper = await _unitOfWork.NewsPaperRepository.GetAsync(id);
+                var newsPaper = await _unitOfWork.NewsPaperRepository.GetAsync(dto.Id);
                 if (newsPaper == null)
                 {
                     return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA1001")));
@@ -102,6 +102,32 @@ namespace BA.Service.NewsPaper
                     return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA1001")));
                 }
                 newsPaper.IsActive = false;
+                newsPaper.ModifiedBy = userId;
+                newsPaper.ModifiedDate = DateTime.Now;
+                var result = _unitOfWork.NewsPaperRepository.Update(newsPaper);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+                await transaction.CommitAsync(cancellationToken);
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                await _sqlCommands.ExceptionLogToDatabase(ex);
+                return Result.Failure(new Error(ex.Message));
+            }
+        }
+
+        public async Task<Result> ActivateOrDeactivateAsync(int userId, int id, bool isActive, CancellationToken cancellationToken)
+        {
+            var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
+            try
+            {
+                var newsPaper = await _unitOfWork.NewsPaperRepository.GetAsync(id);
+                if (newsPaper == null)
+                {
+                    return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA1001")));
+                }
+                newsPaper.IsActive = isActive;
                 newsPaper.ModifiedBy = userId;
                 newsPaper.ModifiedDate = DateTime.Now;
                 var result = _unitOfWork.NewsPaperRepository.Update(newsPaper);

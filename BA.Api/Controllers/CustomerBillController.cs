@@ -8,6 +8,7 @@ namespace BA.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CustomerBillController : BaseController
     {
         private readonly IBillService _billService;
@@ -39,9 +40,8 @@ namespace BA.Api.Controllers
             return APIResponse("BA101", null!);
         }
 
-        [HttpGet("GetById")]
-        [AllowAnonymous]
-        public async Task<Dictionary<string, object>> GetCustomerBillById(int id)
+        [HttpPost("GetById")]
+        public async Task<Dictionary<string, object>> GetCustomerBillById([FromQuery] int id)
         {
             var result = await _billService.GetCustomerBillById(id);
             if (result.IsSuccess)
@@ -52,7 +52,6 @@ namespace BA.Api.Controllers
         }
 
         [HttpPost("Update")]
-        [AllowAnonymous]
         public async Task<Dictionary<string, object>> UpdateCustomerBillDetails(int id, [FromBody] UpdateCustomerBillDetailsDto requestDto)
         {
             var result = await _billService.UpdateCustomerBillDetails(UserId, id, requestDto);
@@ -63,8 +62,18 @@ namespace BA.Api.Controllers
             return APIResponse("BA101", null!);
         }
 
+        [HttpPost("UpdateBillStatus")]
+        public async Task<Dictionary<string, object>> UpdateBillStatusAsync(int id, bool isBillPaid)
+        {
+            var result = await _billService.UpdateBillStatusAsync(UserId, id, isBillPaid);
+            if (result.IsSuccess)
+            {
+                return APIResponse("BA100", result.Data!);
+            }
+            return APIResponse("BA101", null!);
+        }
+
         [HttpDelete("Delete")]
-        [AllowAnonymous]
         public async Task<Dictionary<string, object>> DeleteCustomerBill(int id)
         {
             var result = await _billService.DeleteCustomerBill(UserId, id);
@@ -76,7 +85,6 @@ namespace BA.Api.Controllers
         }
 
         [HttpPost("GetTotalMonthDaysCount")]
-        [AllowAnonymous]
         public Dictionary<string, object> GetTotalMonthDaysCount([FromBody] DateRequestDto requestDto)
         {
             var result = _billService.GetSatAndSunCount(requestDto.FromDate, requestDto.ToDate, requestDto.SpecialDays);
@@ -84,21 +92,21 @@ namespace BA.Api.Controllers
         }
 
         #region different ways to call async method into sync method.
-        [HttpGet("Test")]
-        public async Task<Dictionary<string, object>> Test()
-        {
-            int id = 0;
-            var result = _billService.GetCustomerBillById(id).GetAwaiter().GetResult();
+        //[HttpGet("Test")]
+        //public async Task<Dictionary<string, object>> Test()
+        //{
+        //    int id = 0;
+        //    var result = _billService.GetCustomerBillById(id).GetAwaiter().GetResult();
 
-            var result1 = _billService.GetCustomerBillById(id).Result;
+        //    var result1 = _billService.GetCustomerBillById(id).Result;
 
-            _billService.GetCustomerBillById(id).Wait();
-            Task.WaitAll();
+        //    _billService.GetCustomerBillById(id).Wait();
+        //    Task.WaitAll();
 
-            var result2 = Task.Run(() => _billService.GetCustomerBillById(id)).GetAwaiter().GetResult();
+        //    var result2 = Task.Run(() => _billService.GetCustomerBillById(id)).GetAwaiter().GetResult();
 
-            return APIResponse("", result);
-        }
+        //    return APIResponse("", result);
+        //}
         #endregion
     }
 }

@@ -11,7 +11,8 @@ namespace BA.Service.Bill
         Task<Result> GetCustomerBillById(int id);
         Task<Result> UpdateCustomerBillDetails(int userId, int id, UpdateCustomerBillDetailsDto dto);
         Task<Result> DeleteCustomerBill(int userId, int id);
-        Task<byte[]> GenerateBill(int id);
+        Task<Result> UpdateBillStatusAsync(int userId, int id, bool isBillPaid);
+        Task<Result> GenerateBill(int userId, int id);
 
         Dictionary<string, int> GetSatAndSunCount(DateTime fromDate, DateTime toDate, int specialDays = 0);
     }

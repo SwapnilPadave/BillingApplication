@@ -17,7 +17,6 @@ namespace BA.Database.Repos.NewsPapersReposiotry
         public async Task<IEnumerable<GetNewsPaperDetailsDto>> GetNewPaperListAsync()
         {
             var data = await _context.NewsPaperDetails
-                .Where(np => np.IsActive)
                 .Select(np => new GetNewsPaperDetailsDto
                 {
                     Id = np.Id,
@@ -32,7 +31,7 @@ namespace BA.Database.Repos.NewsPapersReposiotry
         public async Task<GetNewsPaperDetailsDto> GetNewsPaperByIdAsync(int id)
         {
             var data = await _context.NewsPaperDetails
-                .Where(np => np.Id == id && np.IsActive)
+                //.Where(np => np.Id == id && np.IsActive)
                 .Select(np => new GetNewsPaperDetailsDto
                 {
                     Id = np.Id,

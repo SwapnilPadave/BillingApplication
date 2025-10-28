@@ -32,7 +32,7 @@ namespace BA.Api.Controllers
             return APIResponse(data.Error.ErrorMsg, null!);
         }
 
-        [HttpGet("GetById")]
+        [HttpPost("GetById")]
         public async Task<Dictionary<string, object>> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
             var data = await _newsPaperService.GetNewsPaperByIdAsync(id, cancellationToken);
@@ -61,10 +61,19 @@ namespace BA.Api.Controllers
             return APIResponse(result.Error.ErrorMsg, null!);
         }
 
-        [HttpDelete("Delete")]
+        [HttpPost("Delete")]
         public async Task<Dictionary<string, object>> DeleteAsync(int id, CancellationToken cancellationToken)
         {
             var result = await _newsPaperService.DeleteNewsPaperAsync(UserId, id, cancellationToken);
+            if (result.IsSuccess)
+                return APIResponse("BA100", result.Data!);
+            return APIResponse(result.Error.ErrorMsg, null!);
+        }
+
+        [HttpPost("ActivateOrDeactivate")]
+        public async Task<Dictionary<string, object>> ActivateOrDeactivateAsync(int id, bool isActive, CancellationToken cancellationToken)
+        {
+            var result = await _newsPaperService.ActivateOrDeactivateAsync(UserId, id,isActive, cancellationToken);
             if (result.IsSuccess)
                 return APIResponse("BA100", result.Data!);
             return APIResponse(result.Error.ErrorMsg, null!);

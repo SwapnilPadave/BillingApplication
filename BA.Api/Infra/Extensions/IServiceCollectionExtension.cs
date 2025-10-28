@@ -6,6 +6,7 @@ using BA.Database.Repos.BillRepository;
 using BA.Database.Repos.CustomerBillDetailsRepository;
 using BA.Database.Repos.CustomerRepository;
 using BA.Database.Repos.EmployeeRepository;
+using BA.Database.Repos.GeneratedBillRepository;
 using BA.Database.Repos.NewsPapersReposiotry;
 using BA.Database.Repos.TokenRepository;
 using BA.Database.Repos.UserRepository;
@@ -46,6 +47,7 @@ namespace BA.Api.Infra.Extensions
             services.AddTransient(typeof(IEmployeeRepository), typeof(EmployeeRepository));
             services.AddTransient(typeof(ITokenRepository), typeof(TokenRepository));
             services.AddTransient<ICustomerBillDetailsRepository, CustomerBillDetailsRepository>();
+            services.AddTransient<IGeneratedBillDetailsRepository, GeneratedBillDetailsRepository>();
 
             services.AddTransient<SqlCommands>();
             //services.AddScoped<IJwtProvider, JwtProvider>();

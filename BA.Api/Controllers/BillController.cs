@@ -15,14 +15,12 @@ namespace BA.Api.Controllers
         [HttpPost("GenerateAndDownloadBill")]
         public async Task<Dictionary<string, object>> GenerateAndDownloadBill(int id)
         {
-            var data = await _billService.GenerateBill(id);
-
-            if (data == null || data.Length == 0)
-                return APIResponse("BA107", null!);
-
-            var base64String = Convert.ToBase64String(data);
-
-            return APIResponse("BA106", data);
+            var result = await _billService.GenerateBill(UserId, id);
+            if (result.IsSuccess && result.Data != null)
+            {
+                return APIResponse("BA106", result.Data);
+            }
+            return APIResponse("Failure", null!);
         }
     }
 }
