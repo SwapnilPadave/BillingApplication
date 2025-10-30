@@ -1,9 +1,8 @@
 ﻿using BA.Dtos.LoginDto;
-using BA.Utility.SqlHelper;
+using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
-using Dapper;
 
 namespace BA.Database
 {
@@ -26,9 +25,8 @@ namespace BA.Database
                 new SqlParameter("@InnerException", ex?.InnerException?.ToString()),
             };
 
-            await SqlServiceHelper.ExecuteNonQueryStoredProcedureAsync(_context, "USP_ExceptionLogToDatabase", sqlParameters);
+            await Utility.SqlHelper.SqlServiceHelper.ExecuteNonQueryStoredProcedureAsync(_context, "USP_ExceptionLogToDatabase", sqlParameters);
         }
-
         public async Task<GetLoginDetails> GetLoginDetails(string userId, string password)
         {
             using (var connection = _context.Database.GetDbConnection())

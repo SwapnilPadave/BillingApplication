@@ -107,13 +107,13 @@ namespace BA.Service.Bill
 
         public async Task<Result> GetAllCustomerBills()
         {
-            var data = await _unitOfWork.BillRepository.GetAllCustomerBillsAsync();
+            IEnumerable<CustomerBillDetails>? data = await _unitOfWork.BillRepository.GetAllCustomerBillsAsync();
             return Result.Success(data);
         }
 
         public async Task<Result> GetCustomerBillById(int id)
         {
-            var data = await _unitOfWork.BillRepository.GetCustomerBillByIdAsync(id);
+            GetCustomerBillDetailsDto? data = await _unitOfWork.BillRepository.GetCustomerBillByIdAsync(id);
             if (data == null)
             {
                 return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA1001")));
@@ -485,7 +485,7 @@ namespace BA.Service.Bill
                 var pdfBytes = document.GeneratePdf();
                 //var pdfBytes = LinearizePdf(rawPdf);
 
-                await _emailService.SendEmailWithAttachmentAsync("Spadave7@gmail.com", "News Paper Bill", "", pdfBytes, newFileName);
+                //await _emailService.SendEmailWithAttachmentAsync("Spadave7@gmail.com", "News Paper Bill", "", pdfBytes, newFileName);
 
                 await File.WriteAllBytesAsync(filePath, pdfBytes);
                 string base64String = Convert.ToBase64String(pdfBytes);

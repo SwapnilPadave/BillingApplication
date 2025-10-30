@@ -50,6 +50,8 @@ namespace BA.Api.Infra.Extensions
             services.AddTransient<IGeneratedBillDetailsRepository, GeneratedBillDetailsRepository>();
 
             services.AddTransient<SqlCommands>();
+            services.AddTransient<SqlServiceHelper>();
+            services.AddTransient<DapperServiceHelper>();
             //services.AddScoped<IJwtProvider, JwtProvider>();
             services.AddTransient(typeof(FluentValidationActionFilter<>));
         }

@@ -39,20 +39,5 @@ namespace BA.Api.Controllers
             IsActive = string.Equals(User.FindFirst("IsActive")?.Value, "true", StringComparison.OrdinalIgnoreCase);
             Role = User.FindFirst("Role")?.Value ?? string.Empty;
         }
-
-        //protected void ExtractUserContext()
-        //{
-        //    if (User?.Identity?.IsAuthenticated != true)
-        //        return;
-
-        //    var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        //    if (int.TryParse(userIdClaim, out int userId))
-        //        UserId = userId;
-
-        //    UserName = User.FindFirst(ClaimTypes.Name)?.Value ?? string.Empty;
-        //    IsAdmin = string.Equals(User.FindFirst("Admin")?.Value, "true", StringComparison.OrdinalIgnoreCase);
-        //    IsActive = string.Equals(User.FindFirst("IsActive")?.Value, "true", StringComparison.OrdinalIgnoreCase);
-        //    Role = User.FindFirst(ClaimTypes.Role)?.Value ?? string.Empty;
-        //}
     }
 }

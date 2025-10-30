@@ -42,7 +42,7 @@ namespace BA.Database.Repos.BillRepository
                                   IsBillPaid = b.IsBillPaid,
                                   NewsPapersDetails = (from np in _context.NewsPaperDetails
                                                        join cnp in _context.CustomerNewsPaperBillDetails on np.Id equals cnp.NewsPaperId
-                                                       where cnp.CustomerId == b.CustomerId
+                                                       where cnp.CustomerId == b.CustomerId && cnp.BillId == id
                                                        select new NewsPaperIdAndAmountDetailsDto
                                                        {
                                                            Id = cnp.NewsPaperId,

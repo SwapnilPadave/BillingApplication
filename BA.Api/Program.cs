@@ -1,4 +1,5 @@
-﻿using BA.Api.Infra.Authentication;
+﻿using Asp.Versioning;
+using BA.Api.Infra.Authentication;
 using BA.Api.Infra.Extensions;
 using BA.Api.Infra.Filters;
 using BA.Api.Infra.Middleware;
@@ -39,6 +40,19 @@ namespace BA.Api
                 options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
             });
 
+            //For api versioning
+            builder.Services.AddApiVersioning(options =>
+            {
+                options.DefaultApiVersion = new ApiVersion(1, 0);
+                options.AssumeDefaultVersionWhenUnspecified = true;
+                options.ReportApiVersions = true;
+            })
+            .AddApiExplorer(options =>
+            {
+                options.GroupNameFormat = "'v'VVV";
+                options.SubstituteApiVersionInUrl = true;
+            });
+
             builder.Services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
@@ -46,6 +60,7 @@ namespace BA.Api
 
             builder.Services.AddMediatR(config => config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
+            builder.Services.AddHttpContextAccessor();
             builder.Services.RegisterRepositories();
             builder.Services.RegisterServices();
             builder.Services.ConfigureDatabase(builder.Configuration);

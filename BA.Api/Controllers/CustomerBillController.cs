@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using BA.Api.Infra.MediatorHandlers.NewsPaperBillHandler;
 using BA.Dtos.BillDto;
 using BA.Service.Bill;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,10 +15,12 @@ namespace BA.Api.Controllers
     {
         private readonly IBillService _billService;
         private readonly IMapper _mapper;
-        public CustomerBillController(IBillService billService, IMapper mapper)
+        private readonly IMediator _mediator;
+        public CustomerBillController(IBillService billService, IMapper mapper, IMediator mediator)
         {
             _billService = billService;
             _mapper = mapper;
+            _mediator = mediator;
         }
         [HttpPost("Add")]
         public async Task<Dictionary<string, object>> AddCustomerBillDetails([FromBody] AddCustomerBillDetailsDto requestDto)
@@ -41,9 +45,9 @@ namespace BA.Api.Controllers
         }
 
         [HttpPost("GetById")]
-        public async Task<Dictionary<string, object>> GetCustomerBillById([FromQuery] int id)
+        public async Task<Dictionary<string, object>> GetCustomerBillById([FromQuery] int billId)
         {
-            var result = await _billService.GetCustomerBillById(id);
+            var result = await _billService.GetCustomerBillById(billId);
             if (result.IsSuccess)
             {
                 return APIResponse("BA100", result.Data!);
@@ -62,7 +66,7 @@ namespace BA.Api.Controllers
             return APIResponse("BA101", null!);
         }
 
-        [HttpPost("UpdateBillStatus")]
+        [HttpPost("UpdateStatus")]
         public async Task<Dictionary<string, object>> UpdateBillStatusAsync(int id, bool isBillPaid)
         {
             var result = await _billService.UpdateBillStatusAsync(UserId, id, isBillPaid);
@@ -106,6 +110,31 @@ namespace BA.Api.Controllers
         //    var result2 = Task.Run(() => _billService.GetCustomerBillById(id)).GetAwaiter().GetResult();
 
         //    return APIResponse("", result);
+        //}
+        #endregion
+
+        #region All methods are using Mediator.
+        //[HttpPost("AddCustomerBillDetailsV1")]
+        //public async Task<Dictionary<string, object>> AddCustomerBillDetailsV1([FromBody] AddNewsPaperBillCommand command)
+        //{
+        //    command.UserId = UserId;
+        //    var result = await _mediator.Send(command);
+        //    if (result.IsSuccess)
+        //    {
+        //        return APIResponse("BA100", result.Data!);
+        //    }
+        //    return APIResponse("BA101", null!);
+        //}
+
+        //[HttpPost("GetAllCustomerBillDetails")]
+        //public async Task<Dictionary<string, object>> GetAllCustomerBillDetailsV1([FromQuery] GetAllCustomerNewsPaperBillDetailsQuery query)
+        //{
+        //    var result = await _mediator.Send(query);
+        //    if (result.IsSuccess)
+        //    {
+        //        return APIResponse("BA200", result.Data!);
+        //    }
+        //    return APIResponse("Failed", null!);
         //}
         #endregion
     }
