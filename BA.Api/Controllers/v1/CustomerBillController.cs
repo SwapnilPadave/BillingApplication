@@ -1,5 +1,5 @@
 ﻿using Asp.Versioning;
-using BA.Api.Infra.MediatorHandlers.NewsPaperBillHandler;
+using BA.Api.Infra.MediatorHandlers.CustomerNewsPaperBillHandler;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

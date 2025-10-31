@@ -5,7 +5,7 @@ using Dapper;
 using iText.Kernel.Pdf.Canvas.Parser.ClipperLib;
 using MediatR;
 
-namespace BA.Api.Infra.MediatorHandlers.NewsPaperBillHandler
+namespace BA.Api.Infra.MediatorHandlers.CustomerNewsPaperBillHandler
 {
     public class UpdateCustomerNewsPapaerBillStatusQuery : IRequest<Result>
     {

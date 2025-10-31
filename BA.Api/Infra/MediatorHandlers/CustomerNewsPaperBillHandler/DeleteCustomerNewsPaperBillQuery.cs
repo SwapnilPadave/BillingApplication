@@ -4,7 +4,7 @@ using BA.Utility.Result;
 using Dapper;
 using MediatR;
 
-namespace BA.Api.Infra.MediatorHandlers.NewsPaperBillHandler
+namespace BA.Api.Infra.MediatorHandlers.CustomerNewsPaperBillHandler
 {
     public class DeleteCustomerNewsPaperBillQuery : IRequest<Result>
     {

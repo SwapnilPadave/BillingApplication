@@ -19,10 +19,10 @@ namespace BA.Database
             var sqlParameters = new[]
             {
                 new SqlParameter("@Date", DateTime.Now),
-                new SqlParameter("@Message", ex?.Message),
-                new SqlParameter("@Type", ex?.GetType().ToString()),
-                new SqlParameter("@StackTrace", ex?.StackTrace?.ToString()),
-                new SqlParameter("@InnerException", ex?.InnerException?.ToString()),
+                new SqlParameter("@Message",string.IsNullOrEmpty(ex.Message) ? "": ex?.Message),
+                new SqlParameter("@Type",Convert.ToString(ex?.GetType())),
+                new SqlParameter("@StackTrace",string.IsNullOrEmpty(ex?.StackTrace) ? "" : ex?.StackTrace),
+                new SqlParameter("@InnerException", string.IsNullOrEmpty(ex?.InnerException?.Message) ? "" : ex?.InnerException?.Message),
             };
 
             await Utility.SqlHelper.SqlServiceHelper.ExecuteNonQueryStoredProcedureAsync(_context, "USP_ExceptionLogToDatabase", sqlParameters);

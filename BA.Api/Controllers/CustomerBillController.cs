@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using BA.Api.Infra.MediatorHandlers.NewsPaperBillHandler;
+using BA.Api.Infra.MediatorHandlers.CustomerNewsPaperBillHandler;
 using BA.Dtos.BillDto;
 using BA.Service.Bill;
 using MediatR;

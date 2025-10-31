@@ -6,7 +6,7 @@ using MediatR;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
-namespace BA.Api.Infra.MediatorHandlers.NewsPaperBillHandler
+namespace BA.Api.Infra.MediatorHandlers.CustomerNewsPaperBillHandler
 {
     public class AddNewsPaperBillCommand : IRequest<Result>
     {

@@ -3,7 +3,7 @@ using BA.Entities.Bill;
 using BA.Utility.Result;
 using MediatR;
 
-namespace BA.Api.Infra.MediatorHandlers.NewsPaperBillHandler
+namespace BA.Api.Infra.MediatorHandlers.CustomerNewsPaperBillHandler
 {
     public class GetAllCustomerBillDetailsQuery : IRequest<Result>
     {
