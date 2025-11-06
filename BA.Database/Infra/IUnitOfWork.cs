@@ -1,6 +1,7 @@
 ﻿using BA.Database.Repos.BillRepository;
 using BA.Database.Repos.CustomerBillDetailsRepository;
 using BA.Database.Repos.CustomerRepository;
+using BA.Database.Repos.EmailTemplateRepository;
 using BA.Database.Repos.EmployeeRepository;
 using BA.Database.Repos.GeneratedBillRepository;
 using BA.Database.Repos.NewsPapersReposiotry;
@@ -22,6 +23,7 @@ namespace BA.Database.Infra
         public ITokenRepository TokenRepository { get; }
         public ICustomerBillDetailsRepository CustomerBillDetailsRepository { get; }
         public IGeneratedBillDetailsRepository GeneratedBillDetailsRepository { get; }
+        public IEmailTemplateRepository EmailTemplateRepository { get; }
 
         // Methods for managing the database context and transactions
         public Task<bool> SaveChangesAsync(CancellationToken cancellationToken = default);

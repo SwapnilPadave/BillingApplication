@@ -241,6 +241,7 @@ namespace BA.Service.Bill
                 return Result.Failure(new Error("BA501"));
             }
         }
+
         public async Task<Result> UpdateBillStatusAsync(int userId, int id, bool isBillPaid)
         {
             var transaction = await _unitOfWork.BeginTransactionAsync();
@@ -501,6 +502,7 @@ namespace BA.Service.Bill
                 return Result.Failure(new Error("BA501"));
             }
         }
+
         private int CalculateTotalDays(DateTime fromDate, DateTime toDate)
         {
             int totalDays = (toDate - fromDate).Days + 1;
@@ -515,6 +517,15 @@ namespace BA.Service.Bill
         {
             var totalAmount = days * amount;
             return totalAmount;
+        }
+
+        public async Task SendNewspaperBillWithAttachmentEmail(string fileName, string customerName, string month, string attachmentBytes = "")
+        {
+            var data = await _unitOfWork.EmailTemplateRepository.GetEmailTemplateByType("BILL");
+            string mailBody = data.EmailBody;
+            mailBody = mailBody.Replace("@CustomerName@", customerName)
+                               .Replace("@Month@", month);
+
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using BA.Entities.Bill;
 using BA.Entities.Customer;
 using BA.Entities.Departments;
+using BA.Entities.Email;
 using BA.Entities.Employees;
 using BA.Entities.GeneratedBill;
 using BA.Entities.NewsPaper;
@@ -27,5 +28,6 @@ namespace BA.Database
         public DbSet<Shifts> Shifts { get; set; }
         public DbSet<CustomerNewsPaperBillDetail> CustomerNewsPaperBillDetails { get; set; }
         public DbSet<GeneratedNewsPaperBillDetails> GeneratedNewsPaperBillDetails { get; set; }
-    }
+        public DbSet<EmailTemplates> EmailTemplates { get; set; }
+        }
 }

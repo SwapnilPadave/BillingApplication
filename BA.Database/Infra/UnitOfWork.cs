@@ -1,6 +1,7 @@
 ﻿using BA.Database.Repos.BillRepository;
 using BA.Database.Repos.CustomerBillDetailsRepository;
 using BA.Database.Repos.CustomerRepository;
+using BA.Database.Repos.EmailTemplateRepository;
 using BA.Database.Repos.EmployeeRepository;
 using BA.Database.Repos.GeneratedBillRepository;
 using BA.Database.Repos.NewsPapersReposiotry;
@@ -24,6 +25,7 @@ namespace BA.Database.Infra
         public ITokenRepository TokenRepository { get; }
         public ICustomerBillDetailsRepository CustomerBillDetailsRepository { get; }
         public IGeneratedBillDetailsRepository GeneratedBillDetailsRepository { get; }
+        public IEmailTemplateRepository EmailTemplateRepository { get; }
         public UnitOfWork(BAContext context
             , IUserRepository userRepository
             , IUserLoginMappingRepository userLoginMappingRepository
@@ -33,7 +35,8 @@ namespace BA.Database.Infra
             , IEmployeeRepository employeeRepository
             , ITokenRepository tokenRepository
             , ICustomerBillDetailsRepository customerBillDetailsRepository
-            , IGeneratedBillDetailsRepository generatedBillDetailsRepository)
+            , IGeneratedBillDetailsRepository generatedBillDetailsRepository
+            , IEmailTemplateRepository emailTemplateRepository)
         {
             _context = context;
             UserRepository = userRepository;
@@ -45,6 +48,7 @@ namespace BA.Database.Infra
             TokenRepository = tokenRepository;
             CustomerBillDetailsRepository = customerBillDetailsRepository;
             GeneratedBillDetailsRepository = generatedBillDetailsRepository;
+            EmailTemplateRepository = emailTemplateRepository;
         }
         public async Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
         {
