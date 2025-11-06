@@ -173,7 +173,7 @@ namespace BA.Api.Infra.Extensions
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings?.Key!)),
                     NameClaimType = "UserName",
                     RoleClaimType = "Role",
-                    ClockSkew = TimeSpan.FromHours(6)
+                    ClockSkew = TimeSpan.Zero
                 };
 
                 options.Events = new JwtBearerEvents

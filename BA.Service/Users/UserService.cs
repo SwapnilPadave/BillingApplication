@@ -2,7 +2,6 @@
 using BA.Database.Infra;
 using BA.Dtos.UserDtos;
 using BA.Entities.Users;
-using BA.Utility.Content;
 using BA.Utility.Result;
 
 namespace BA.Service.Users
@@ -43,7 +42,7 @@ namespace BA.Service.Users
             {
                 await transaction.RollbackAsync(cancellationToken);
                 await _sqlCommands.ExceptionLogToDatabase(ex);
-                return Result.Failure(new Error(ex.Message));
+                return Result.Failure(new Error("BA501"));
             }
         }
 
@@ -53,7 +52,7 @@ namespace BA.Service.Users
 
             if (data == null || !data.Any())
             {
-                return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA1001")));
+                return Result.Failure(new Error("BA502"));
             }
             return Result.Success(data);
         }
@@ -63,7 +62,7 @@ namespace BA.Service.Users
             var user = await _unitOfWork.UserRepository.GetAsync(id);
             if (user == null)
             {
-                return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA1001")));
+                return Result.Failure(new Error("BA502"));
             }
             return Result.Success(user);
         }
@@ -76,7 +75,7 @@ namespace BA.Service.Users
                 var user = await _unitOfWork.UserRepository.GetAsync(id);
                 if (user == null)
                 {
-                    return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA1001")));
+                    return Result.Failure(new Error("BA502"));
                 }
                 user.Name = dto.Name;
                 user.MobileNumber = dto.MobileNumber;
@@ -96,7 +95,7 @@ namespace BA.Service.Users
             {
                 await transaction.RollbackAsync(cancellationToken);
                 await _sqlCommands.ExceptionLogToDatabase(ex);
-                return Result.Failure(new Error(ex.Message));
+                return Result.Failure(new Error("BA501"));
             }
         }
 
@@ -108,7 +107,7 @@ namespace BA.Service.Users
                 var user = await _unitOfWork.UserRepository.GetAsync(id);
                 if (user == null)
                 {
-                    return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA1001")));
+                    return Result.Failure(new Error("BA502"));
                 }
 
                 user.IsActive = false;
@@ -124,7 +123,7 @@ namespace BA.Service.Users
             {
                 await transaction.RollbackAsync(cancellationToken);
                 await _sqlCommands.ExceptionLogToDatabase(ex);
-                return Result.Failure(new Error(ex.Message));
+                return Result.Failure(new Error("BA501"));
             }
         }
     }

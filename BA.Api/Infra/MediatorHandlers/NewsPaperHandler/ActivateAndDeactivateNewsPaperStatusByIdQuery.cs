@@ -1,5 +1,6 @@
 ﻿using BA.Database;
 using BA.Service.CurrentUserHelper;
+using BA.Utility.Content;
 using BA.Utility.Result;
 using Dapper;
 using MediatR;
@@ -31,9 +32,11 @@ namespace BA.Api.Infra.MediatorHandlers.NewsPaperHandler
                 if (rowsAffected > 0)
                 {
                     var status = request.IsActive ? "activated" : "deactivated";
-                    return Result.Success($"Record {status} successfully.");
+
+                    var replace = new Dictionary<string, string> { { "status", status } };
+                    return Result.Success(ContentLoader.ReturnLanguageMessage("BA707", replace));
                 }
-                return Result.Failure(new Error("Failed to update the status of this record."));
+                return Result.Failure(new Error("BA708"));
             }
         }
     }

@@ -38,7 +38,7 @@ namespace BA.Api.Controllers
             var userData = await _loginService.GetLoginDetails(request.UserId, request.Password, cancellationToken);
             if (userData == null)
             {
-                return APIResponse("BA104", null!);
+                return APIResponse("BA504", null!);
             }
             else
             {
@@ -63,7 +63,6 @@ namespace BA.Api.Controllers
                 var expireTime = DateTime.Now.AddMinutes(_jwtOptions.ExpiryMinutes);
                 var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
                 await _tokenService.SaveTokenAsync(userData.UserId, tokenString, expireTime, cancellationToken);
-                //Console.WriteLine($"Generated JWT: {tokenString}");
 
                 return APIResponse("BA100", new { Token = tokenString, Expiration = token.ValidTo });
             }
@@ -75,7 +74,7 @@ namespace BA.Api.Controllers
             var result = await _loginService.RegisterUserAsync(requetDto, cancellationToken);
             if (result.IsSuccess)
                 return APIResponse("BA107", result.Data!);
-            return APIResponse(result.Error.ErrorMsg, null!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [Authorize]
@@ -86,7 +85,7 @@ namespace BA.Api.Controllers
             var result = await _loginService.Logout(UserId, cancellationToken);
             if (result.IsSuccess)
                 return APIResponse("BA100", null!);
-            return APIResponse(result.Error.ErrorMsg, null!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
     }
 }

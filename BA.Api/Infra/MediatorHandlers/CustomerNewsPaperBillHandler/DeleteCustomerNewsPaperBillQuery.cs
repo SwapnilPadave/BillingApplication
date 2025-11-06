@@ -1,5 +1,6 @@
 ﻿using BA.Database;
 using BA.Service.CurrentUserHelper;
+using BA.Utility.Content;
 using BA.Utility.Result;
 using Dapper;
 using MediatR;
@@ -29,9 +30,9 @@ namespace BA.Api.Infra.MediatorHandlers.CustomerNewsPaperBillHandler
                 var rowsAffected = await _dapperServiceHelper.ExecuteAsync("Usp_DeleteCustomerNewsPaperBill", param);
                 if (rowsAffected > 0)
                 {
-                    return Result.Success("Bill deleted successfully");
+                    return Result.Success();
                 }
-                return Result.Failure(new Error("Failed to delete bill"));
+                return Result.Failure(new Error("BA1204"));
             }
         }
     }

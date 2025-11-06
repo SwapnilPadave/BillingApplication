@@ -24,9 +24,9 @@ namespace BA.Api.Controllers.v1
             var result = await _mediator.Send(command);
             if (result.IsSuccess)
             {
-                return APIResponse("BA100", result.Data!);
+                return APIResponse("BA1205", result.Data!);
             }
-            return APIResponse("BA101", null!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("GetById")]
@@ -37,7 +37,7 @@ namespace BA.Api.Controllers.v1
             {
                 return APIResponse("BA100", result.Data!);
             }
-            return APIResponse(result.Error.ErrorMsg, null!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpGet("GetAll")]
@@ -48,7 +48,7 @@ namespace BA.Api.Controllers.v1
             {
                 return APIResponse("BA100", result.Data!);
             }
-            return APIResponse("BA101", null!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("UpdateStatus")]
@@ -57,9 +57,9 @@ namespace BA.Api.Controllers.v1
             var result = await _mediator.Send(query);
             if (result.IsSuccess)
             {
-                return APIResponse("BA100", null!);
+                return APIResponse("BA1206", null!);
             }
-            return APIResponse(result.Error.ErrorMsg, null!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpDelete("Delete")]
@@ -68,9 +68,9 @@ namespace BA.Api.Controllers.v1
             var result = await _mediator.Send(query);
             if (result.IsSuccess)
             {
-                return APIResponse("BA100", null!);
+                return APIResponse("BA1207", null!);
             }
-            return APIResponse(result.Error.ErrorMsg, null!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("GetTotalMonthDaysCount")]
@@ -81,7 +81,7 @@ namespace BA.Api.Controllers.v1
             {
                 return APIResponse("BA100", result.Data!);
             }
-            return APIResponse(result.Error.ErrorMsg, null!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
     }
 }

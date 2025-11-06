@@ -2,7 +2,6 @@
 using BA.Database.Infra;
 using BA.Dtos.NewsPaperDto;
 using BA.Entities.NewsPaper;
-using BA.Utility.Content;
 using BA.Utility.Result;
 
 namespace BA.Service.NewsPaper
@@ -23,7 +22,7 @@ namespace BA.Service.NewsPaper
             var data = await _unitOfWork.NewsPaperRepository.GetNewPaperListAsync();
             if (data == null || !data.Any())
             {
-                return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA1001")));
+                return Result.Failure(new Error("BA502"));
             }
             return Result.Success(data);
         }
@@ -33,7 +32,7 @@ namespace BA.Service.NewsPaper
             var data = await _unitOfWork.NewsPaperRepository.GetNewsPaperByIdAsync(id);
             if (data == null)
             {
-                return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA1001")));
+                return Result.Failure(new Error("BA502"));
             }
             return Result.Success(data);
         }
@@ -60,7 +59,7 @@ namespace BA.Service.NewsPaper
             {
                 await transaction.RollbackAsync(cancellationToken);
                 await _sqlCommands.ExceptionLogToDatabase(ex);
-                return Result.Failure(new Error(ex.Message));
+                return Result.Failure(new Error("BA501"));
             }
         }
 
@@ -72,7 +71,7 @@ namespace BA.Service.NewsPaper
                 var newsPaper = await _unitOfWork.NewsPaperRepository.GetAsync(dto.Id);
                 if (newsPaper == null)
                 {
-                    return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA1001")));
+                    return Result.Failure(new Error("BA502"));
                 }
                 newsPaper.Name = dto.Name;
                 newsPaper.Language = dto.Language;
@@ -87,7 +86,7 @@ namespace BA.Service.NewsPaper
             {
                 await transaction.RollbackAsync(cancellationToken);
                 await _sqlCommands.ExceptionLogToDatabase(ex);
-                return Result.Failure(new Error(ex.Message));
+                return Result.Failure(new Error("BA501"));
             }
         }
 
@@ -99,7 +98,7 @@ namespace BA.Service.NewsPaper
                 var newsPaper = await _unitOfWork.NewsPaperRepository.GetAsync(id);
                 if (newsPaper == null)
                 {
-                    return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA1001")));
+                    return Result.Failure(new Error("BA502"));
                 }
                 newsPaper.IsActive = false;
                 newsPaper.ModifiedBy = userId;
@@ -113,7 +112,7 @@ namespace BA.Service.NewsPaper
             {
                 await transaction.RollbackAsync(cancellationToken);
                 await _sqlCommands.ExceptionLogToDatabase(ex);
-                return Result.Failure(new Error(ex.Message));
+                return Result.Failure(new Error("BA501"));
             }
         }
 
@@ -125,7 +124,7 @@ namespace BA.Service.NewsPaper
                 var newsPaper = await _unitOfWork.NewsPaperRepository.GetAsync(id);
                 if (newsPaper == null)
                 {
-                    return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA1001")));
+                    return Result.Failure(new Error("BA502"));
                 }
                 newsPaper.IsActive = isActive;
                 newsPaper.ModifiedBy = userId;
@@ -139,7 +138,7 @@ namespace BA.Service.NewsPaper
             {
                 await transaction.RollbackAsync(cancellationToken);
                 await _sqlCommands.ExceptionLogToDatabase(ex);
-                return Result.Failure(new Error(ex.Message));
+                return Result.Failure(new Error("BA501"));
             }
         }
     }

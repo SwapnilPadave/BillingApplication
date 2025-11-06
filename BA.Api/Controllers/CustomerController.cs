@@ -26,7 +26,6 @@ namespace BA.Api.Controllers
             _mediator = mediator;
         }
 
-        //[AllowAnonymous]
         [HttpPost("Add")]
         public async Task<Dictionary<string, object>> AddAsync([FromBody] AddCustomerRequest customerDto)
         {
@@ -36,7 +35,7 @@ namespace BA.Api.Controllers
             {
                 return APIResponse("BA1100", result.Data!);
             }
-            return APIResponse(result.Error.ErrorMsg, null!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("Update")]
@@ -46,9 +45,9 @@ namespace BA.Api.Controllers
             var result = await _customerService.UpdateCustomerAsync(UserId, id, request);
             if (result.IsSuccess)
             {
-                return APIResponse("BA1101", result.Data!);
+                return APIResponse("BA1102", result.Data!);
             }
-            return APIResponse(result.Error.ErrorMsg, null!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpGet("GetById")]
@@ -57,9 +56,9 @@ namespace BA.Api.Controllers
             var result = await _customerService.GetCustomerByIdAsync(id);
             if (result.IsSuccess)
             {
-                return APIResponse("BA1102", result.Data!);
+                return APIResponse("BA100", result.Data!);
             }
-            return APIResponse(result.Error.ErrorMsg, null!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpGet("GetAll")]
@@ -68,9 +67,9 @@ namespace BA.Api.Controllers
             var result = await _customerService.GetAllCustomersAsync();
             if (result.IsSuccess)
             {
-                return APIResponse("BA1103", result.Data!);
+                return APIResponse("BA100", result.Data!);
             }
-            return APIResponse(result.Error.ErrorMsg, null!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("Delete")]
@@ -81,31 +80,7 @@ namespace BA.Api.Controllers
             {
                 return APIResponse("BA1104", result.Data!);
             }
-            return APIResponse(result.Error.ErrorMsg, null!);
-        }
-
-        //Using Mediator Pattern
-        [AllowAnonymous]
-        [HttpGet("GetEmployeeByIdUsingMediator")]
-        public async Task<Dictionary<string, object>> GetEmployeeByIdUsingMediator(int id)
-        {
-            var result = await _mediator.Send(new GetCustomerByIdQuery(id));
-            if (result != null)
-            {
-                return APIResponse("BA1102", result);
-            }
-            return APIResponse("No record found.", null!);
-        }
-
-        [AllowAnonymous]
-        [HttpPost("AddEmployeeUsingMediator")]
-        public async Task<Dictionary<string, object>> AddEmployeeUsingMediator([FromBody] AddCustomerCommand command)
-        {
-            command.UserId = UserId;
-            var result = await _mediator.Send(command);
-            if (result.IsSuccess)
-                return APIResponse("BA1100", result.Data!);
-            return APIResponse(result.Error.ErrorMsg, null!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
     }
 }

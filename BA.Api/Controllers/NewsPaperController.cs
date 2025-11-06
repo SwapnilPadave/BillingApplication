@@ -26,19 +26,19 @@ namespace BA.Api.Controllers
         [HttpGet("GetAll")]
         public async Task<Dictionary<string, object>> GetAllAsync(CancellationToken cancellationToken)
         {
-            var data = await _newsPaperService.GetNewsPapersAsync(cancellationToken);
-            if (data.IsSuccess)
-                return APIResponse("BA100", data.Data!);
-            return APIResponse(data.Error.ErrorMsg, null!);
+            var result = await _newsPaperService.GetNewsPapersAsync(cancellationToken);
+            if (result.IsSuccess)
+                return APIResponse("BA100", result.Data!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("GetById")]
         public async Task<Dictionary<string, object>> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
-            var data = await _newsPaperService.GetNewsPaperByIdAsync(id, cancellationToken);
-            if (data.IsSuccess)
-                return APIResponse("BA100", data.Data!);
-            return APIResponse(data.Error.ErrorMsg, null!);
+            var result = await _newsPaperService.GetNewsPaperByIdAsync(id, cancellationToken);
+            if (result.IsSuccess)
+                return APIResponse("BA100", result.Data!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("Add")]
@@ -47,8 +47,8 @@ namespace BA.Api.Controllers
             var newsPaper = _mapper.Map<AddNewsPaperDto>(request);
             var result = await _newsPaperService.AddNewsPaperAsync(UserId, newsPaper, cancellationToken);
             if (result.IsSuccess)
-                return APIResponse("BA100", result.Data!);
-            return APIResponse(result.Error.ErrorMsg, null!);
+                return APIResponse("BA701", result.Data!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("Update")]
@@ -57,8 +57,8 @@ namespace BA.Api.Controllers
             var newsPaper = _mapper.Map<UpdateNewsPaperDto>(request);
             var result = await _newsPaperService.UpdateNewsPaperAsync(UserId, id, newsPaper, cancellationToken);
             if (result.IsSuccess)
-                return APIResponse("BA100", result.Data!);
-            return APIResponse(result.Error.ErrorMsg, null!);
+                return APIResponse("BA703", result.Data!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("Delete")]
@@ -66,8 +66,8 @@ namespace BA.Api.Controllers
         {
             var result = await _newsPaperService.DeleteNewsPaperAsync(UserId, id, cancellationToken);
             if (result.IsSuccess)
-                return APIResponse("BA100", result.Data!);
-            return APIResponse(result.Error.ErrorMsg, null!);
+                return APIResponse("BA705", result.Data!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("ActivateOrDeactivate")]
@@ -76,17 +76,17 @@ namespace BA.Api.Controllers
             var result = await _newsPaperService.ActivateOrDeactivateAsync(UserId, id,isActive, cancellationToken);
             if (result.IsSuccess)
                 return APIResponse("BA100", result.Data!);
-            return APIResponse(result.Error.ErrorMsg, null!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpGet("GetEmployees")]
         [AllowAnonymous]
         public async Task<Dictionary<string, object>> GetEmployeesAsync(CancellationToken cancellationToken)
         {
-            var data = await _employeeService.GetEmployees();
-            if (data.IsSuccess)
-                return APIResponse("BA100", data.Data!);
-            return APIResponse(data.Error.ErrorMsg, null!);
+            var result = await _employeeService.GetEmployees();
+            if (result.IsSuccess)
+                return APIResponse("BA100", result.Data!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
     }
 }

@@ -2,7 +2,6 @@
 using BA.Dtos.LoginDto;
 using BA.Entities.Users;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace BA.Database.Repos.UsersRepository
 {

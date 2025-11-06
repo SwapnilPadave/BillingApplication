@@ -21,19 +21,19 @@ namespace BA.Api.Controllers.v1
         [HttpGet("GetAll")]
         public async Task<Dictionary<string, object>> GetAllAsync(CancellationToken cancellationToken)
         {
-            var data = await _mediator.Send(new GetNewsPaperDetailsQuery());
-            if (data.IsSuccess)
-                return APIResponse("BA100", data.Data!);
-            return APIResponse(data.Error.ErrorMsg, null!);
+            var result = await _mediator.Send(new GetNewsPaperDetailsQuery());
+            if (result.IsSuccess)
+                return APIResponse("BA100", result.Data!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("GetById")]
         public async Task<Dictionary<string, object>> GetByIdAsync([FromQuery] GetNewsPaperDetailsByIdQuery request)
         {
-            var data = await _mediator.Send(request);
-            if (data.IsSuccess)
-                return APIResponse("BA100", data.Data!);
-            return APIResponse(data.Error.ErrorMsg, null!);
+            var result = await _mediator.Send(request);
+            if (result.IsSuccess)
+                return APIResponse("BA100", result.Data!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("Add")]
@@ -41,8 +41,8 @@ namespace BA.Api.Controllers.v1
         {
             var result = await _mediator.Send(command);
             if (result.IsSuccess)
-                return APIResponse("BA100", result.Data!);
-            return APIResponse(result.Error.ErrorMsg, null!);
+                return APIResponse("BA701", result.Data!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("Update")]
@@ -50,8 +50,8 @@ namespace BA.Api.Controllers.v1
         {
             var result = await _mediator.Send(request);
             if (result.IsSuccess)
-                return APIResponse("BA100", result.Data!);
-            return APIResponse(result.Error.ErrorMsg, null!);
+                return APIResponse("BA703", result.Data!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("Delete")]
@@ -59,8 +59,8 @@ namespace BA.Api.Controllers.v1
         {
             var result = await _mediator.Send(request);
             if (result.IsSuccess)
-                return APIResponse("BA100", result.Data!);
-            return APIResponse(result.Error.ErrorMsg, null!);
+                return APIResponse("BA705", result.Data!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("ActivateOrDeactivate")]
@@ -69,7 +69,7 @@ namespace BA.Api.Controllers.v1
             var result = await _mediator.Send(request);
             if (result.IsSuccess)
                 return APIResponse("BA100", result.Data!);
-            return APIResponse(result.Error.ErrorMsg, null!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
     }
 }

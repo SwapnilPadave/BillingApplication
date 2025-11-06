@@ -1,5 +1,6 @@
 ﻿using BA.Utility.Folder;
 using Newtonsoft.Json;
+using static iText.Svg.SvgConstants;
 
 namespace BA.Utility.Content
 {
@@ -27,6 +28,7 @@ namespace BA.Utility.Content
             }
         }
 
+        //For returning language data based on key and language
         public static string ReturnLanguageData(string key, string language = "")
         {
             try
@@ -39,15 +41,31 @@ namespace BA.Utility.Content
                     _ => en_US[key],
                 };
             }
-            catch
-            {
-                //Console.WriteLine("Exception Multilingual Data:" + key.ToString());
-                return key;
-            }
-            finally
-            {
+            catch{return key;}
+            finally{}
+        }
 
+        //For replacing placeholders in the message
+        public static string ReplacePlaceholders(string message, Dictionary<string, string>? values = null)
+        {
+            if (string.IsNullOrEmpty(message) || values == null || values.Count == 0)
+                return message;
+
+            foreach (var item in values)
+            {
+                string placeholder = $"@{item.Key}@";
+                if (message.Contains(placeholder))
+                    message = message.Replace(placeholder, item.Value ?? "");
             }
+
+            return message;
+        }
+
+        //For returning final message with replaced placeholders
+        public static string ReturnLanguageMessage(string key, Dictionary<string, string>? values = null, string language = "")
+        {
+            string message = ReturnLanguageData(key, language);
+            return ReplacePlaceholders(message, values);
         }
     }
 }

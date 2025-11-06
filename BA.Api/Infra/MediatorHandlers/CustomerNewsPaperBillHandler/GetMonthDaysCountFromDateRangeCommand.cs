@@ -1,5 +1,6 @@
 ﻿using BA.Database;
 using BA.Dtos.BillDto;
+using BA.Utility.Content;
 using BA.Utility.Result;
 using Dapper;
 using MediatR;
@@ -33,9 +34,9 @@ namespace BA.Api.Infra.MediatorHandlers.CustomerNewsPaperBillHandler
 
                     return Result.Success(result!);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    return Result.Failure(new Error(ex.Message));
+                    return Result.Failure(new Error("BA501"));
                 }
             }
         }

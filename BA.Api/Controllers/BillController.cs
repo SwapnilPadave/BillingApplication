@@ -18,9 +18,9 @@ namespace BA.Api.Controllers
             var result = await _billService.GenerateBill(UserId, id);
             if (result.IsSuccess && result.Data != null)
             {
-                return APIResponse("BA106", result.Data);
+                return APIResponse("BA507", result.Data);
             }
-            return APIResponse("Failure", null!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
     }
 }

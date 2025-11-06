@@ -1,41 +1,56 @@
 {
+  //Common success messages
   "BA100": "Success.",
   "BA101": "Failure.",
-  "BA102": "Request is null",
   "BA103": "Otp generated and sent successfully.",
-  "BA104": "User does not exist.",
-  "BA105": "Failed to send email.",
-  "BA106": "Failed to register user.",
   "BA107": "User registered successfully.",
+
+  //Common error messages
   "BA500": "Something went wrong",
+  "BA501": "An error occurred while processing your request.",
+  "BA502": "Record not found.",
+  "BA503": "Request is null",
+  "BA504": "User does not exist.",
+  "BA505": "Refresh token expired or invalid.",
+  "BA506": "Failed to send email.",
+  "BA507": "Failed to register user.",
 
-  "BA200": "Duplicate folder name.",
+  //News Paper Details
+  "BA701": "News paper details added successfully.",
+  "BA702": "Failed to create news paper details.",
+  "BA703": "News paper details updated successfully.",
+  "BA704": "Failed to update news paper details.",
+  "BA705": "News paper details deleted successfully.",
+  "BA706": "Failed to delete news paper details.",
+  "BA707": "Record @status@ successfully.",
+  "BA708": "Failed to update status of this record.",
 
-  //user
-  "BA300": "Email already exists.",
-  "BA301": "Mobile already exists.",
+  //Admmin user validation messages
+  "BA1001": "Invalid UserId or Password.",
+  "BA1002": "User name is required.",
+  "BA1003": "User name must be between 3 and 100 characters.",
+  "BA1004": "Email address is required.",
+  "BA1005": "Please enter valid email address.",
+  "BA1006": "Mobile number is required.",
+  "BA1007": "Please enter valid mobile number.",
+  "BA1008": "Please enter upto 100 charactors in address line.",
+  "BA1009": "User details added successfully.",
 
-  //email
-  "BA351": "Email does not belong to the user.",
-  "BA352": "Not a primary email address.",
-  "BA353": "Not a alternate email address.",
-  "BA354": "Email is not varified.",
-  "BA355": "Email is inactive.",
-  "BA356": "Primary email address already exists.",
-  "BA357": "Alternate email address already exists.",
+  //Customer Details
+  "BA1101": "Customer details added successfully.",
+  "BA1102": "Customer details updated successfully.",
+  "BA1103": "Customer details deleted successfully.",
+  "BA1104": "Customer details not found or failed to add customer details.",
+  "BA1105": "Customer details not found or failed to update customer details.",
+  "BA1106": "Customer details not found or status unchanged.",
 
-  "BA1001": "No record found.",
-  "BA1002": "Invalid UserId or Password.",
-
-  "BA1003": "User name is required.",
-  "BA1004": "User name must be between 3 and 100 characters.",
-  "BA1005": "Email address is required.",
-  "BA1006": "Please enter valid email address.",
-  "BA1007": "Mobile number is required.",
-  "BA1008": "Please enter valid mobile number.",
-  "BA1009": "Please enter upto 100 charactors in address line.",
-
-  "BA1100": "Customer added successfully.",
-  "BA1101": "Customer updated successfully.",
-  "BA1102": "Customer deleted successfully.",
+  //Customer News Paper Bill Details
+  "BA1201": "Customer bill details not found.",
+  "BA1202": "Failed to update bill status.",
+  "BA1203": "Bill details deleted successfully.",
+  "BA1204": "Failed to delete bill details.",
+  "BA1205": "Bill Details Added Successfully.",
+  "BA1206": "Bill status updated Successfully.",
+  "BA1207": "Bill details deleted Successfully.",
+  "BA1208": "Bill details updated Successfully."
 }

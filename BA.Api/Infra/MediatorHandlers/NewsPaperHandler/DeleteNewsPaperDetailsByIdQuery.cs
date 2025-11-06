@@ -29,9 +29,9 @@ namespace BA.Api.Infra.MediatorHandlers.NewsPaperHandler
                 var rowsAffected = await _dapper.ExecuteAsync("Usp_UpdateNewsPaperDetailsStatusById", param);
                 if (rowsAffected > 0)
                 {
-                    return Result.Success("Record deleted successfully.");
+                    return Result.Success();
                 }
-                return Result.Failure(new Error("Failed to delete this record."));
+                return Result.Failure(new Error("BA706"));
             }
         }
     }

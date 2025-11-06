@@ -1,5 +1,4 @@
-﻿using BA.Dtos.EmployeeDto;
-using BA.Utility.Result;
+﻿using BA.Utility.Result;
 
 namespace BA.Service.Employee
 {

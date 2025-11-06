@@ -1,11 +1,9 @@
 ﻿using BA.Database;
 using BA.Database.Infra;
-using BA.Database.Repos.UserRepository;
 using BA.Dtos.LoginDto;
 using BA.Entities.Users;
 using BA.Service.Email;
 using BA.Utility;
-using BA.Utility.Content;
 using BA.Utility.Result;
 
 namespace BA.Service.Login
@@ -27,7 +25,6 @@ namespace BA.Service.Login
         public async Task<GetLoginDetails> GetLoginDetails(string userId, string password, CancellationToken cancellationToken)
         {
             var encryptedPassword = Utils.Encrypt(password);
-            //var data = await _sqlCommands.GetLoginDetails(userId, encryptedPassword);
             var data = await _unitOfWork.UserLoginMappingRepository.GetLoginDetailsAsync(userId, encryptedPassword);
 
             // Deactivate previous active tokens on new login
@@ -65,7 +62,7 @@ namespace BA.Service.Login
             catch (Exception ex)
             {
                 await _sqlCommands.ExceptionLogToDatabase(ex);
-                return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA108")));
+                return Result.Failure(new Error("BA101"));
             }
         }
 
@@ -85,11 +82,11 @@ namespace BA.Service.Login
         //        var isEmailSent = await _emailService.SendEmailAsync(request.Email, subject, body);
         //        if (isEmailSent)
         //            return Result.Success();
-        //        return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA105")));
+        //        return Result.Failure(new Error("BA506"));
         //    }
         //    else
         //    {
-        //        return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA104")));
+        //        return Result.Failure(new Error("BA504"));
         //   }
         //}
         #endregion  
@@ -102,7 +99,7 @@ namespace BA.Service.Login
                 var user = await _unitOfWork.UserRepository.IsUserExistsAsync(request.Email, request.MobileNumber);
                 if (user == null)
                 {
-                    return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA104")));
+                    return Result.Failure(new Error("BA504"));
                 }
                 var userLogin = new UserLoginMapping();
                 userLogin.UserId = user.Id;
@@ -122,7 +119,7 @@ namespace BA.Service.Login
             {
                 await transaction.RollbackAsync(cancellationToken);
                 await _sqlCommands.ExceptionLogToDatabase(ex);
-                return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA106")));
+                return Result.Failure(new Error("BA507"));
             }
         }
     }

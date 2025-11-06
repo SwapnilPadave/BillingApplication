@@ -1,5 +1,6 @@
 ﻿using BA.Database;
 using BA.Service.CurrentUserHelper;
+using BA.Utility.Content;
 using BA.Utility.Result;
 using Dapper;
 using MediatR;
@@ -38,12 +39,12 @@ namespace BA.Api.Infra.MediatorHandlers.NewsPaperHandler
                     {
                         return Result.Success();
                     }
-                    return Result.Failure(new Error("BA1001"));
+                    return Result.Failure(new Error("BA704"));
                 }
                 catch (Exception ex)
                 {
                     await _sqlCommand.ExceptionLogToDatabase(ex);
-                    return Result.Failure(new Error(ex.Message));
+                    return Result.Failure(new Error("BA501"));
                 }
             }
         }

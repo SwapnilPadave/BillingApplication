@@ -6,6 +6,7 @@
         public const string RESPONSE_MESSAGE_FIELD = "Message";
         public const string RESPONSE_DATA_FIELD = "Data";
         public const string RESPONSE_MODEL_STATE_ERRORS_FIELD = "ModelStateErrors";
+        public const string RESPONSE_STATUS_CODE_FIELD = "StatusCode";
         public const string JWT_TOKEN_CLAIM_KEY = "User";
         public const string HEADER_LANGUAG_EFIELD = "Language";
         public const string APP_SETTINGS_KEY = "AppSettings";

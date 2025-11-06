@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using BA.Api.Infra.MediatorHandlers.CustomerNewsPaperBillHandler;
 using BA.Dtos.BillDto;
 using BA.Service.Bill;
 using MediatR;
@@ -28,9 +27,9 @@ namespace BA.Api.Controllers
             var result = await _billService.AddCustomerBillDetails(UserId, requestDto);
             if (result.IsSuccess)
             {
-                return APIResponse("BA100", result.Data!);
+                return APIResponse("BA1205", result.Data!);
             }
-            return APIResponse("BA101", null!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpGet("GetAll")]
@@ -41,7 +40,7 @@ namespace BA.Api.Controllers
             {
                 return APIResponse("BA100", result.Data!);
             }
-            return APIResponse("BA101", null!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("GetById")]
@@ -52,7 +51,7 @@ namespace BA.Api.Controllers
             {
                 return APIResponse("BA100", result.Data!);
             }
-            return APIResponse("BA101", null!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("Update")]
@@ -61,9 +60,9 @@ namespace BA.Api.Controllers
             var result = await _billService.UpdateCustomerBillDetails(UserId, id, requestDto);
             if (result.IsSuccess)
             {
-                return APIResponse("BA100", result.Data!);
+                return APIResponse("BA1208", result.Data!);
             }
-            return APIResponse("BA101", null!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("UpdateStatus")]
@@ -72,9 +71,9 @@ namespace BA.Api.Controllers
             var result = await _billService.UpdateBillStatusAsync(UserId, id, isBillPaid);
             if (result.IsSuccess)
             {
-                return APIResponse("BA100", result.Data!);
+                return APIResponse("BA1206", result.Data!);
             }
-            return APIResponse("BA101", null!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpDelete("Delete")]
@@ -83,9 +82,9 @@ namespace BA.Api.Controllers
             var result = await _billService.DeleteCustomerBill(UserId, id);
             if (result.IsSuccess)
             {
-                return APIResponse("BA100", result.Data!);
+                return APIResponse("BA1203", result.Data!);
             }
-            return APIResponse("BA101", null!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("GetTotalMonthDaysCount")]
@@ -138,10 +137,4 @@ namespace BA.Api.Controllers
         //}
         #endregion
     }
-}
-public class DateRequestDto
-{
-    public DateTime FromDate { get; set; }
-    public DateTime ToDate { get; set; }
-    public int SpecialDays { get; set; } = 0;
 }

@@ -91,23 +91,23 @@ namespace BA.Service.Bill
                 await _unitOfWork.SaveChangesAsync();
 
                 await transaction.CommitAsync();
-
-                //Generate PDF Bill and save to folder location.
-                //await GenerateBill(result.Id);
-
                 return Result.Success(billDetails);
             }
             catch (Exception ex)
             {
                 await _unitOfWork.RollbackTransactionAsync();
                 await _sqlCommand.ExceptionLogToDatabase(ex);
-                return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA101")));
+                return Result.Failure(new Error("BA501"));
             }
         }
 
         public async Task<Result> GetAllCustomerBills()
         {
             IEnumerable<CustomerBillDetails>? data = await _unitOfWork.BillRepository.GetAllCustomerBillsAsync();
+            if (data == null || !data.Any())
+            {
+                return Result.Failure(new Error("BA502"));
+            }
             return Result.Success(data);
         }
 
@@ -116,7 +116,7 @@ namespace BA.Service.Bill
             GetCustomerBillDetailsDto? data = await _unitOfWork.BillRepository.GetCustomerBillByIdAsync(id);
             if (data == null)
             {
-                return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA1001")));
+                return Result.Failure(new Error("BA502"));
             }
             return Result.Success(data);
         }
@@ -131,7 +131,7 @@ namespace BA.Service.Bill
 
                 if (billDetails == null)
                 {
-                    return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA1001")));
+                    return Result.Failure(new Error("BA502"));
                 }
                 billDetails.CustomerId = dto.CustomerId;
                 billDetails.CustomerName = dto.CustomerName;
@@ -213,7 +213,7 @@ namespace BA.Service.Bill
             {
                 await transaction.RollbackAsync();
                 await _sqlCommand.ExceptionLogToDatabase(ex);
-                return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA101")));
+                return Result.Failure(new Error("BA501"));
             }
         }
 
@@ -225,7 +225,7 @@ namespace BA.Service.Bill
                 var billDetails = await _unitOfWork.BillRepository.GetAsync(id);
                 if (billDetails == null)
                 {
-                    return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA1001")));
+                    return Result.Failure(new Error("BA502"));
                 }
                 billDetails.IsActive = false;
                 billDetails.ModifiedBy = userId;
@@ -238,10 +238,9 @@ namespace BA.Service.Bill
             {
                 await _unitOfWork.RollbackTransactionAsync();
                 await _sqlCommand.ExceptionLogToDatabase(ex);
-                return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA101")));
+                return Result.Failure(new Error("BA501"));
             }
         }
-
         public async Task<Result> UpdateBillStatusAsync(int userId, int id, bool isBillPaid)
         {
             var transaction = await _unitOfWork.BeginTransactionAsync();
@@ -250,7 +249,7 @@ namespace BA.Service.Bill
                 var data = await _unitOfWork.BillRepository.GetAsync(id);
                 if (data == null)
                 {
-                    return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA1001")));
+                    return Result.Failure(new Error("BA502"));
                 }
                 else
                 {
@@ -268,7 +267,7 @@ namespace BA.Service.Bill
             {
                 await _unitOfWork.RollbackTransactionAsync();
                 await _sqlCommand.ExceptionLogToDatabase(ex);
-                return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA101")));
+                return Result.Failure(new Error("BA501"));
             }
         }
 
@@ -318,12 +317,16 @@ namespace BA.Service.Bill
                         var newsP = new NewsPaperDetailsDto()
                         {
                             NewsPaperId = paperId.BillId,
-                            NewsPaperName = paperId.CustomerName,
+                            NewsPaperName = paperId.NewsPaperName,
                             Quantity = paperId.TotalDays,
                             Price = paperId.TotalAmount
                         };
                         billsDetails.Add(newsP);
                     }
+                }
+                else
+                {
+                    return Result.Failure(new Error("BA502"));
                 }
                 var indianCulture = new CultureInfo("en-IN");
                 var document = Document.Create(container =>
@@ -478,14 +481,7 @@ namespace BA.Service.Bill
                 await _unitOfWork.GeneratedBillDetailsRepository.AddAsync(saveDetails);
                 await _unitOfWork.SaveChangesAsync();
 
-                //using var memoryStream = new MemoryStream();
-                //document.GeneratePdf(memoryStream);
-                //var pdfBytes = memoryStream.ToArray();
-                //memoryStream.Position = 0;
                 var pdfBytes = document.GeneratePdf();
-                //var pdfBytes = LinearizePdf(rawPdf);
-
-                //await _emailService.SendEmailWithAttachmentAsync("Spadave7@gmail.com", "News Paper Bill", "", pdfBytes, newFileName);
 
                 await File.WriteAllBytesAsync(filePath, pdfBytes);
                 string base64String = Convert.ToBase64String(pdfBytes);
@@ -502,10 +498,9 @@ namespace BA.Service.Bill
             catch (Exception ex)
             {
                 await _sqlCommand.ExceptionLogToDatabase(ex);
-                return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA101")));
+                return Result.Failure(new Error("BA501"));
             }
         }
-
         private int CalculateTotalDays(DateTime fromDate, DateTime toDate)
         {
             int totalDays = (toDate - fromDate).Days + 1;
@@ -516,42 +511,11 @@ namespace BA.Service.Bill
             decimal totalAmount = dto.Sum(x => x.SpecialDayAmount + x.SundayAmount + x.SaturdayAmount + x.NormalDayAmount);
             return totalAmount;
         }
-
         private decimal CalculateDayWiseTotalAmount(int days, decimal amount)
         {
             var totalAmount = days * amount;
             return totalAmount;
         }
-
-        //private byte[] LinearizePdf(byte[] pdfBytes)
-        //{
-        //    using var input = new MemoryStream(pdfBytes);
-        //    using var output = new MemoryStream();
-
-        //    var document = PdfSharpCore.Pdf.IO.PdfReader.Open(input, PdfSharpCore.Pdf.IO.PdfDocumentOpenMode.Modify);
-        //    document.Options.FlateEncodeMode = PdfSharpCore.Pdf.PdfFlateEncodeMode.BestCompression;
-        //    document.Options.UseFlateDecoderForJpegImages = PdfSharpCore.Pdf.PdfUseFlateDecoderForJpegImages.Automatic;
-        //    document.Save(output, false); // important: 'false' makes file linearized
-
-        //    return output.ToArray();
-        //}
-
-        //private byte[] LinearizePdf(byte[] pdfBytes)
-        //{
-        //    using var input = new MemoryStream(pdfBytes);
-        //    using var output = new MemoryStream();
-
-        //    var writerProps = new iText.Kernel.Pdf.WriterProperties()
-        //        .SetFullCompressionMode(true)
-        //        .SetLinearized(true); // ✅ Real linearization
-
-        //    using var reader = new iText.Kernel.Pdf.PdfReader(input);
-        //    using var writer = new iText.Kernel.Pdf.PdfWriter(output, writerProps);
-        //    using var pdfDoc = new iText.Kernel.Pdf.PdfDocument(reader, writer);
-        //    pdfDoc.Close();
-
-        //    return output.ToArray();
-        //}
     }
 }
 

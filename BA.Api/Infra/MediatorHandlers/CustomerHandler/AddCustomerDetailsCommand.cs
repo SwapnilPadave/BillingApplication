@@ -5,39 +5,42 @@ using BA.Utility.Result;
 using Dapper;
 using MediatR;
 
-namespace BA.Api.Infra.MediatorHandlers.NewsPaperHandler
+namespace BA.Api.Infra.MediatorHandlers.CustomerHandler
 {
-    public class CreateNewsPaperDetailsCommand : IRequest<Result>
+    public class AddCustomerDetailsCommand : IRequest<Result>
     {
-        public string Name { get; set; } = string.Empty;
-        public string Language { get; set; } = string.Empty;
+        public string BuildingName { get; set; } = string.Empty;
+        public string RoomNo { get; set; } = string.Empty;
+        public string AreaName { get; set; } = string.Empty;
 
-        public class CreateNewsPaperDetailsCommandHandler : IRequestHandler<CreateNewsPaperDetailsCommand, Result>
+        public class AddCustomerDetailsCommandHandler : IRequestHandler<AddCustomerDetailsCommand, Result>
         {
             private readonly ICurrentUserService _currentUser;
             private readonly DapperServiceHelper _dapper;
             private readonly SqlCommands _sqlCommands;
-            public CreateNewsPaperDetailsCommandHandler(ICurrentUserService currentUser, DapperServiceHelper dapper, SqlCommands sqlCommands)
+            public AddCustomerDetailsCommandHandler(ICurrentUserService currentUser, DapperServiceHelper dapper, SqlCommands sqlCommands)
             {
                 _currentUser = currentUser;
                 _dapper = dapper;
                 _sqlCommands = sqlCommands;
             }
-            public async Task<Result> Handle(CreateNewsPaperDetailsCommand request, CancellationToken cancellationToken)
+
+            public async Task<Result> Handle(AddCustomerDetailsCommand request, CancellationToken cancellationToken)
             {
                 try
                 {
                     var param = new DynamicParameters();
-                    param.Add("@Name", request.Name);
-                    param.Add("@Language", request.Language);
+                    param.Add("@BuildingName", request.BuildingName);
+                    param.Add("@RoomNo", request.RoomNo);
+                    param.Add("@AreaName", request.AreaName);
                     param.Add("@CreatedBy", _currentUser.UserId);
 
-                    var rowsAffected = await _dapper.ExecuteAsync("Usp_InsertNewsPaperDetails", param);
+                    var rowsAffected = await _dapper.ExecuteAsync("Usp_InsertCustomerDetails", param);
                     if (rowsAffected > 0)
                     {
                         return Result.Success();
                     }
-                    return Result.Failure(new Error("BA702"));
+                    return Result.Failure(new Error("BA1104"));
                 }
                 catch (Exception ex)
                 {

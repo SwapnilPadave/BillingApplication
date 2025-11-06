@@ -4,7 +4,6 @@ using BA.Api.Infra.Requests.LoginRequest;
 using BA.Dtos.LoginDto;
 using BA.Service.Login;
 using BA.Service.Token;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -47,17 +46,6 @@ namespace BA.Api.Controllers
 
             if (userData != null)
             {
-                //var claims = new List<Claim>
-                //{
-                //    new Claim("UserId", userData.UserId.ToString()),
-                //    new Claim("UserName", userData.UserName),
-                //    //new Claim("MobileNumber", userData.MobileNumber ?? ""),
-                //    //new Claim("EmailAddress", userData.EmailAddress ?? ""),
-                //    new Claim("IsActive", userData.IsActive.ToString().ToLower()),
-                //    new Claim("Admin", userData.Admin.ToString().ToLower()),
-                //    new Claim("Role", userData.Admin ? "Admin" : "User"),
-                //};
-
                 var claims = new List<Claim>
                     {
                         new Claim(ClaimTypes.NameIdentifier, userData.UserId.ToString()), // <-- fixed
@@ -85,7 +73,7 @@ namespace BA.Api.Controllers
             }
             else
             {
-                return APIResponse("BA101", null!);
+                return APIFailureResponse("BA101", null!);
             }
         }
 
@@ -96,7 +84,7 @@ namespace BA.Api.Controllers
             var result = await _loginService.RegisterUserAsync(requetDto, cancellationToken);
             if (result.IsSuccess)
                 return APIResponse("BA107", result.Data!);
-            return APIResponse(result.Error.ErrorMsg, null!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("Logout")]
@@ -105,8 +93,8 @@ namespace BA.Api.Controllers
             ExtractUserContext();
             var result = await _loginService.Logout(UserId, cancellationToken);
             if (result.IsSuccess)
-                return APIResponse("BA102", null!);
-            return APIResponse(result.Error.ErrorMsg, null!);
+                return APIResponse("BA503", null!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpGet("GetInfo")]

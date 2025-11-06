@@ -32,8 +32,8 @@ namespace BA.Api.Controllers
             var user = _mapper.Map<AddUserDto>(request);
             var result = await _userService.AddUserAsync(UserId, user, cancellationToken);
             if (result.IsSuccess)
-                return APIResponse("BA100", result.Data!);
-            return APIResponse(result.Error.ErrorMsg, null!);
+                return APIResponse("BA1009", result.Data!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("GetAll")]
@@ -42,7 +42,7 @@ namespace BA.Api.Controllers
             var result = await _userService.GetUsersAsync(cancellationToken);
             if (result.IsSuccess)
                 return APIResponse("BA100", result.Data!);
-            return APIResponse(result.Error.ErrorMsg, null!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("GetById")]
@@ -51,7 +51,7 @@ namespace BA.Api.Controllers
             var result = await _userService.GetUserByIdAsync(id, cancellationToken);
             if (result.IsSuccess)
                 return APIResponse("BA100", result.Data!);
-            return APIResponse(result.Error.ErrorMsg, null!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("Update")]
@@ -61,7 +61,7 @@ namespace BA.Api.Controllers
             var result = await _userService.UpdateUserAsync(UserId, id, user, cancellationToken);
             if (result.IsSuccess)
                 return APIResponse("BA100", result.Data!);
-            return APIResponse(result.Error.ErrorMsg, null!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpDelete("Delete")]
@@ -70,7 +70,7 @@ namespace BA.Api.Controllers
             var result = await _userService.DeleteUserAsync(UserId, id, cancellationToken);
             if (result.IsSuccess)
                 return APIResponse("BA100", result.Data!);
-            return APIResponse(result.Error.ErrorMsg, null!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
     }
 }

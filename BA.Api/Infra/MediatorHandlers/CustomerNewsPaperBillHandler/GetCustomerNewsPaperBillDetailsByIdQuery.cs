@@ -1,5 +1,6 @@
 ﻿using BA.Database;
 using BA.Dtos.BillDto;
+using BA.Utility.Content;
 using BA.Utility.Result;
 using Dapper;
 using MediatR;
@@ -28,7 +29,7 @@ namespace BA.Api.Infra.MediatorHandlers.CustomerNewsPaperBillHandler
                     var result = await _dapperServiceHelper.QueryMultipleAsync("Usp_GetCustomerNewsPaperBillDetailsById", param,
                         multi =>
                         {
-                            GetCustomerBillDetailsDto? billDetails = multi.ReadFirstOrDefault<GetCustomerBillDetailsDto>() ?? throw new Exception("Bill details not found."); ;
+                            GetCustomerBillDetailsDto? billDetails = multi.ReadFirstOrDefault<GetCustomerBillDetailsDto>() ?? throw new Exception("BA1201");
                             var newsPapersDetails = multi.Read<NewsPaperIdAndAmountDetailsDto>().AsEnumerable();
 
                             billDetails.NewsPapersDetails = newsPapersDetails.ToList();

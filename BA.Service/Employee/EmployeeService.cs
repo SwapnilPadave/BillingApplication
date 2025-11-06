@@ -1,7 +1,5 @@
 ﻿using BA.Database.Infra;
-using BA.Dtos.EmployeeDto;
 using BA.Utility.Result;
-using Microsoft.AspNetCore.Http;
 
 namespace BA.Service.Employee
 {

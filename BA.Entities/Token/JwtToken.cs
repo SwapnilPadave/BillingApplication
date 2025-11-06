@@ -10,6 +10,8 @@ namespace BA.Entities.Token
         public string Token { get; set; } = string.Empty;
         public DateTime CreatedDate { get; set; }
         public DateTime ExpireAt { get; set; }
+        public string RefreshToken { get; set; } = string.Empty;
+        public DateTime RefreshTokenExpireAt { get; set; }
         public bool IsActive { get; set; }
     }
 }

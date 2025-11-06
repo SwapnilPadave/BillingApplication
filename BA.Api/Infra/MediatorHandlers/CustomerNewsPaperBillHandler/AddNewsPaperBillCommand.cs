@@ -1,6 +1,7 @@
 ﻿using BA.Database;
 using BA.Dtos.BillDto;
 using BA.Service.CurrentUserHelper;
+using BA.Utility.Content;
 using BA.Utility.Result;
 using MediatR;
 using Microsoft.Data.SqlClient;
@@ -78,7 +79,7 @@ namespace BA.Api.Infra.MediatorHandlers.CustomerNewsPaperBillHandler
                 catch (Exception ex)
                 {
                     await _sqlCommand.ExceptionLogToDatabase(ex);
-                    return Result.Failure(new Error("Error while processing your request."));
+                    return Result.Failure(new Error("BA501"));
                 }
             }
         }

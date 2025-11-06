@@ -1,5 +1,6 @@
 ﻿using BA.Database;
 using BA.Dtos.NewsPaperDto;
+using BA.Utility.Content;
 using BA.Utility.Result;
 using Dapper;
 using MediatR;
@@ -27,7 +28,7 @@ namespace BA.Api.Infra.MediatorHandlers.NewsPaperHandler
                 {
                     return Result.Success(result);
                 }
-                return Result.Failure(new Error("Record not found"));
+                return Result.Failure(new Error("BA502"));
             }
         }
     }

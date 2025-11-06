@@ -5,39 +5,36 @@ using BA.Utility.Result;
 using Dapper;
 using MediatR;
 
-namespace BA.Api.Infra.MediatorHandlers.NewsPaperHandler
+namespace BA.Api.Infra.MediatorHandlers.CustomerHandler
 {
-    public class CreateNewsPaperDetailsCommand : IRequest<Result>
+    public class UpdateCustomerStatusQuery : IRequest<Result>
     {
-        public string Name { get; set; } = string.Empty;
-        public string Language { get; set; } = string.Empty;
-
-        public class CreateNewsPaperDetailsCommandHandler : IRequestHandler<CreateNewsPaperDetailsCommand, Result>
+        public int Id { get; set; }
+        public class UpdateCustomerStatusQueryHandler : IRequestHandler<UpdateCustomerStatusQuery, Result>
         {
             private readonly ICurrentUserService _currentUser;
             private readonly DapperServiceHelper _dapper;
             private readonly SqlCommands _sqlCommands;
-            public CreateNewsPaperDetailsCommandHandler(ICurrentUserService currentUser, DapperServiceHelper dapper, SqlCommands sqlCommands)
+            public UpdateCustomerStatusQueryHandler(ICurrentUserService currentUser, DapperServiceHelper dapper, SqlCommands sqlCommands)
             {
                 _currentUser = currentUser;
                 _dapper = dapper;
                 _sqlCommands = sqlCommands;
             }
-            public async Task<Result> Handle(CreateNewsPaperDetailsCommand request, CancellationToken cancellationToken)
+            public async Task<Result> Handle(UpdateCustomerStatusQuery request, CancellationToken cancellationToken)
             {
                 try
                 {
                     var param = new DynamicParameters();
-                    param.Add("@Name", request.Name);
-                    param.Add("@Language", request.Language);
-                    param.Add("@CreatedBy", _currentUser.UserId);
+                    param.Add("@Id", request.Id);
+                    param.Add("@ModifiedBy", _currentUser.UserId);
 
-                    var rowsAffected = await _dapper.ExecuteAsync("Usp_InsertNewsPaperDetails", param);
+                    var rowsAffected = await _dapper.ExecuteAsync("Usp_UpdateCustomerStatusById", param);
                     if (rowsAffected > 0)
                     {
                         return Result.Success();
                     }
-                    return Result.Failure(new Error("BA702"));
+                    return Result.Failure(new Error("BA1106"));
                 }
                 catch (Exception ex)
                 {

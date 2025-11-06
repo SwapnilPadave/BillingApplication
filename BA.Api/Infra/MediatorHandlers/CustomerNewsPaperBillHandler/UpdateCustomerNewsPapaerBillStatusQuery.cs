@@ -1,15 +1,14 @@
 ﻿using BA.Database;
 using BA.Service.CurrentUserHelper;
+using BA.Utility.Content;
 using BA.Utility.Result;
 using Dapper;
-using iText.Kernel.Pdf.Canvas.Parser.ClipperLib;
 using MediatR;
 
 namespace BA.Api.Infra.MediatorHandlers.CustomerNewsPaperBillHandler
 {
     public class UpdateCustomerNewsPapaerBillStatusQuery : IRequest<Result>
     {
-        //public int UserId { get; set; }
         public int Id { get; set; }
         public bool IsBillPaid { get; set; }
 
@@ -32,9 +31,9 @@ namespace BA.Api.Infra.MediatorHandlers.CustomerNewsPaperBillHandler
                 var rowsAffected = await _dapperServiceHelper.ExecuteAsync("Usp_UpdateCustomerNewsPaperBillStatus", param);
                 if (rowsAffected > 0)
                 {
-                    return Result.Success("Success");
+                    return Result.Success();
                 }
-                return Result.Failure(new Error("Failed to update bill status"));
+                return Result.Failure(new Error("BA1202"));
             }
         }
     }

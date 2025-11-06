@@ -2,9 +2,7 @@
 using BA.Database.Infra;
 using BA.Dtos.CustomerDto;
 using BA.Entities.Customer;
-using BA.Utility.Content;
 using BA.Utility.Result;
-using System.Linq;
 
 namespace BA.Service.Customer
 {
@@ -36,13 +34,13 @@ namespace BA.Service.Customer
                 await _unitOfWork.CustomerDetailsRepository.AddAsync(customerDetails);
                 await _unitOfWork.SaveChangesAsync();
                 await transaction.CommitAsync();
-                return Result.Success(ContentLoader.ReturnLanguageData("BA1100"));
+                return Result.Success();
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
                 await _sqlCommands.ExceptionLogToDatabase(ex);
-                return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA101")));
+                return Result.Failure(new Error("BA501"));
             }
         }
 
@@ -54,7 +52,7 @@ namespace BA.Service.Customer
                 var customerDetails = await _unitOfWork.CustomerDetailsRepository.GetAsync(customerDto.Id);
                 if (customerDetails == null)
                 {
-                    return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA1001")));
+                    return Result.Failure(new Error("BA502"));
                 }
                 customerDetails.BuildingName = customerDto.BuildingName;
                 customerDetails.RoomNo = customerDto.RoomNo;
@@ -65,13 +63,13 @@ namespace BA.Service.Customer
                 _unitOfWork.CustomerDetailsRepository.Update(customerDetails);
                 await _unitOfWork.SaveChangesAsync();
                 await transaction.CommitAsync();
-                return Result.Success(ContentLoader.ReturnLanguageData("BA1101"));
+                return Result.Success();
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
                 await _sqlCommands.ExceptionLogToDatabase(ex);
-                return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA101")));
+                return Result.Failure(new Error("BA501"));
             }
         }
 
@@ -83,7 +81,7 @@ namespace BA.Service.Customer
                 var customerDetails = await _unitOfWork.CustomerDetailsRepository.GetAsync(id);
                 if (customerDetails == null)
                 {
-                    return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA1001")));
+                    return Result.Failure(new Error("BA502"));
                 }
                 customerDetails.IsActive = false;
                 customerDetails.ModifiedBy = userId;
@@ -91,13 +89,13 @@ namespace BA.Service.Customer
                 _unitOfWork.CustomerDetailsRepository.Update(customerDetails);
                 await _unitOfWork.SaveChangesAsync();
                 await transaction.CommitAsync();
-                return Result.Success(ContentLoader.ReturnLanguageData("BA1102"));
+                return Result.Success();
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
                 await _sqlCommands.ExceptionLogToDatabase(ex);
-                return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA101")));
+                return Result.Failure(new Error("BA501"));
             }
         }
 
@@ -108,14 +106,14 @@ namespace BA.Service.Customer
                 var customerDetails = await _unitOfWork.CustomerDetailsRepository.GetAsync(id);
                 if (customerDetails == null)
                 {
-                    return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA1001")));
+                    return Result.Failure(new Error("BA502"));
                 }
                 return Result.Success(customerDetails);
             }
             catch (Exception ex)
             {
                 await _sqlCommands.ExceptionLogToDatabase(ex);
-                return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA101")));
+                return Result.Failure(new Error("BA501"));
             }
         }
 
@@ -124,17 +122,16 @@ namespace BA.Service.Customer
             try
             {
                 var customerDetailsList = await _unitOfWork.CustomerDetailsRepository.GetAllAsync();
-                    //GetAllAsync(c => c.IsActive);
                 if (customerDetailsList == null || !customerDetailsList.Any())
                 {
-                    return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA1001")));
+                    return Result.Failure(new Error("BA502"));
                 }
                 return Result.Success(customerDetailsList);
             }
             catch (Exception ex)
             {
                 await _sqlCommands.ExceptionLogToDatabase(ex);
-                return Result.Failure(new Error(ContentLoader.ReturnLanguageData("BA101")));
+                return Result.Failure(new Error("BA501"));
             }
         }
 
