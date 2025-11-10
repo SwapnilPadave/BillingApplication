@@ -1,10 +1,17 @@
-﻿using BA.Database;
+﻿using Azure.Core;
+using BA.Database;
 using BA.Database.Infra;
 using BA.Dtos.LoginDto;
+using BA.Entities.Token;
 using BA.Entities.Users;
 using BA.Service.Email;
 using BA.Utility;
 using BA.Utility.Result;
+using Dapper;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 
 namespace BA.Service.Login
 {
@@ -13,13 +20,16 @@ namespace BA.Service.Login
         private readonly SqlCommands _sqlCommands;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IEmailService _emailService;
+        private readonly DapperServiceHelper _dapper;
         public LoginService(SqlCommands sqlCommands
             , IUnitOfWork unitOfWork
-            , IEmailService emailService)
+            , IEmailService emailService,
+DapperServiceHelper dapper)
         {
             _sqlCommands = sqlCommands;
             _unitOfWork = unitOfWork;
             _emailService = emailService;
+            _dapper = dapper;
         }
 
         public async Task<GetLoginDetails> GetLoginDetails(string userId, string password, CancellationToken cancellationToken)
@@ -120,6 +130,77 @@ namespace BA.Service.Login
                 await transaction.RollbackAsync(cancellationToken);
                 await _sqlCommands.ExceptionLogToDatabase(ex);
                 return Result.Failure(new Error("BA507"));
+            }
+        }
+
+        public async Task<Result> GetRefreshToken(string refreshToken, string jwtKey, int expireInMin, string jwtIssuer, string jwtAudience)
+        {
+            try
+            {
+                var param = new DynamicParameters();
+                param.Add("@RefreshToken", refreshToken);
+
+                var tokenData = await _dapper.QueryFirstOrDefaultAsync<JwtToken>("Usp_GetTokenByRefreshToken", param);
+
+                if (tokenData == null || tokenData.IsActive == false || tokenData.RefreshTokenExpireAt < DateTime.Now)
+                {
+                    return Result.Failure(new Error("BA505"));
+                }
+
+                var paramUser = new DynamicParameters();
+                paramUser.Add("@UserId", tokenData.UserId);
+                var user = await _dapper.QueryFirstOrDefaultAsync<GetLoginDetails>("USP_GetUserLoginDetails", paramUser);
+                if (user == null) return Result.Failure(new Error("BA504"));
+
+                // Create new access token
+                var claims = new List<Claim>
+                    {
+                        new Claim("UserId", user.UserId.ToString()),
+                        new Claim("UserName", user.UserName),
+                        new Claim("IsActive", user.IsActive.ToString().ToLower()),
+                        new Claim("Admin", user.Admin.ToString().ToLower()),
+                        new Claim("Role", user.Admin ? "Admin" : "User")
+                    };
+
+                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey));
+                var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+                var newAccessExpiry = DateTime.Now.AddMinutes(expireInMin);
+                var newJwt = new JwtSecurityToken(
+                    issuer: jwtIssuer,
+                    audience: jwtAudience,
+                    claims: claims,
+                    expires: newAccessExpiry,
+                    signingCredentials: creds
+                );
+
+                var newAccessTokenString = new JwtSecurityTokenHandler().WriteToken(newJwt);
+
+                // Deactivate previous active access tokens for this user
+                var paramDeactivate = new DynamicParameters();
+                paramDeactivate.Add("@UserId", user.UserId);
+                await _dapper.ExecuteAsync("Usp_DeactivateAccessTokensForUser", paramDeactivate);
+
+                // Insert new access token with same refresh token and expiry
+                var paramSave = new DynamicParameters();
+                paramSave.Add("@UserId", user.UserId);
+                paramSave.Add("@Token", newAccessTokenString);
+                paramSave.Add("@ExpireAt", newAccessExpiry);
+                paramSave.Add("@RefreshToken", tokenData.RefreshToken);
+                paramSave.Add("@RefreshTokenExpireAt", tokenData.RefreshTokenExpireAt); // unchanged
+                await _dapper.ExecuteAsync("Usp_InsertTokenDetails", paramSave);
+
+                return Result.Success(new
+                {
+                    Token = newAccessTokenString,
+                    Expiration = newAccessExpiry,
+                    RefreshToken = tokenData.RefreshToken,
+                    RefreshTokenExpireAt = tokenData.RefreshTokenExpireAt
+                });
+            }
+            catch (Exception ex)
+            {
+                return Result.Failure(new Error(ex.Message));
             }
         }
     }

@@ -1,3 +1,4 @@
+
 {
   //Common success messages
   "BA100": "Success.",
@@ -14,6 +15,7 @@
   "BA505": "Refresh token expired or invalid.",
   "BA506": "Failed to send email.",
   "BA507": "Failed to register user.",
+  "BA508": "Email template not found.",
 
   //News Paper Details
   "BA701": "News paper details added successfully.",

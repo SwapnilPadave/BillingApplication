@@ -2,7 +2,6 @@
 using BA.Database;
 using BA.Dtos.LoginDto;
 using BA.Entities.Token;
-using BA.Utility.Content;
 using BA.Utility.Result;
 using Dapper;
 using MediatR;

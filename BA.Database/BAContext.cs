@@ -8,6 +8,7 @@ using BA.Entities.NewsPaper;
 using BA.Entities.Shift;
 using BA.Entities.Token;
 using BA.Entities.Users;
+using BA.Entities.VideoStream;
 using Microsoft.EntityFrameworkCore;
 
 namespace BA.Database
@@ -16,6 +17,9 @@ namespace BA.Database
     {
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Video>().HasMany(v => v.Formats).WithOne(f => f.Video).HasForeignKey(f => f.VideoId);
+            modelBuilder.Entity<Video>().HasMany(v => v.Comments).WithOne(c => c.Video).HasForeignKey(c => c.VideoId);
         }
         public DbSet<User> Users { get; set; }
         public DbSet<UserLoginMapping> UserLoginMappings { get; set; }
@@ -29,5 +33,8 @@ namespace BA.Database
         public DbSet<CustomerNewsPaperBillDetail> CustomerNewsPaperBillDetails { get; set; }
         public DbSet<GeneratedNewsPaperBillDetails> GeneratedNewsPaperBillDetails { get; set; }
         public DbSet<EmailTemplates> EmailTemplates { get; set; }
-        }
+        public DbSet<Video> Videos { get; set; }
+        public DbSet<VideoFormat> VideoFormats { get; set; }
+        public DbSet<Comment> Comments { get; set; }
+    }
 }

@@ -1,7 +1,6 @@
 ﻿using Asp.Versioning;
 using BA.Api.Infra.MediatorHandlers.AuthHandler;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BA.Api.Controllers.v1
@@ -33,9 +32,9 @@ namespace BA.Api.Controllers.v1
             var result = await _mediator.Send(dto);
             if (!result.IsSuccess)
             {
-                return APIResponse(result.Error.ErrorMsg, null!);
+                return APIFailureResponse(result.Error.ErrorMsg, null!);
             }
-            return APIFailureResponse(result.Error.ErrorMsg, null!);
+            return APIResponse("BA100", result.Data!);
         }
     }
 }

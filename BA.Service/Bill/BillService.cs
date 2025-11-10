@@ -4,8 +4,10 @@ using BA.Dtos.BillDto;
 using BA.Entities.Bill;
 using BA.Entities.GeneratedBill;
 using BA.Service.Email;
-using BA.Utility.Content;
+using BA.Utility.AppSettings;
 using BA.Utility.Result;
+using Dapper;
+using Microsoft.Extensions.Options;
 using QuestPDF.Fluent;
 using QuestPDF.Helpers;
 using QuestPDF.Infrastructure;
@@ -18,13 +20,19 @@ namespace BA.Service.Bill
         private readonly IUnitOfWork _unitOfWork;
         private readonly SqlCommands _sqlCommand;
         private readonly IEmailService _emailService;
+        private readonly DapperServiceHelper _dapper;
+        private readonly SmtpSettings _smtpSettings;
         public BillService(IUnitOfWork unitOfWork
             , SqlCommands sqlCommand
-            , IEmailService emailService)
+            , IEmailService emailService
+            , DapperServiceHelper dapper
+            ,IOptions<SmtpSettings> smtpSettings)
         {
             _unitOfWork = unitOfWork;
             _sqlCommand = sqlCommand;
             _emailService = emailService;
+            _dapper = dapper;
+            _smtpSettings = smtpSettings.Value;
         }
 
         public async Task<Result> AddCustomerBillDetails(int userId, AddCustomerBillDetailsDto dto)
@@ -484,6 +492,12 @@ namespace BA.Service.Bill
 
                 var pdfBytes = document.GeneratePdf();
 
+                var isMailSentResult = await SendNewspaperBillWithAttachmentEmail(userId, "swapi195@gmail.com", newFileName, data.CustomerName ?? "", currentMonth, attachmentBytes: pdfBytes);
+                if (isMailSentResult.IsFailure)
+                {
+                    return Result.Failure(new Error(isMailSentResult.Error.ErrorMsg));
+                }
+
                 await File.WriteAllBytesAsync(filePath, pdfBytes);
                 string base64String = Convert.ToBase64String(pdfBytes);
 
@@ -519,13 +533,43 @@ namespace BA.Service.Bill
             return totalAmount;
         }
 
-        public async Task SendNewspaperBillWithAttachmentEmail(string fileName, string customerName, string month, string attachmentBytes = "")
+        private async Task<Result> SendNewspaperBillWithAttachmentEmail(int userId, string toEmail, string fileName, string customerName, string month, string CcMail = "", string bccMail = "", byte[]? attachmentBytes = null)
         {
-            var data = await _unitOfWork.EmailTemplateRepository.GetEmailTemplateByType("BILL");
-            string mailBody = data.EmailBody;
-            mailBody = mailBody.Replace("@CustomerName@", customerName)
-                               .Replace("@Month@", month);
+            try
+            {
+                var data = await _unitOfWork.EmailTemplateRepository.GetEmailTemplateByType("BILL");
+                if (data == null)
+                {
+                    return Result.Failure(new Error("BA508"));
+                }
+                string mailBody = data.EmailBody;
+                mailBody = mailBody.Replace("@CustomerName@", customerName)
+                                   .Replace("@Month@", month);
 
+                string subject = data.EmailSubject.Replace("@Month@", month);
+
+                var isSent = await _emailService.SendEmailWithAttachmentAsync(toEmail, subject, mailBody, attachmentBytes, fileName, "SPadave7@Gmail.Com");
+
+                var param = new DynamicParameters();
+                param.Add("@UserId", userId);
+                param.Add("@EmailType", "BILL");
+                param.Add("@FromEmail", _smtpSettings.FromEmail);
+                param.Add("@ToEmail", toEmail);
+                param.Add("@CcEmail", CcMail);
+                param.Add("@BccEmail", bccMail);
+                param.Add("@EmailBody", mailBody);
+                param.Add("@AttachedFileName", fileName);
+                param.Add("@@IsEmailSent", isSent);
+
+                await _dapper.ExecuteAsync("Usp_InsertEmailSentAuditLog", param);
+
+                return Result.Success();
+            }
+            catch (Exception ex)
+            {
+                await _sqlCommand.ExceptionLogToDatabase(ex);
+                return Result.Failure(new Error("BA501"));
+            }
         }
     }
 }

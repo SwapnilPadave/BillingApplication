@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using BA.Api.Infra.Authentication;
+using BA.Api.Infra.MediatorHandlers.AuthHandler;
 using BA.Api.Infra.Requests.LoginRequest;
 using BA.Dtos.LoginDto;
 using BA.Service.Login;
 using BA.Service.Token;
+using BA.Utility.Token;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -62,9 +64,19 @@ namespace BA.Api.Controllers
                 );
                 var expireTime = DateTime.Now.AddMinutes(_jwtOptions.ExpiryMinutes);
                 var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-                await _tokenService.SaveTokenAsync(userData.UserId, tokenString, expireTime, cancellationToken);
 
-                return APIResponse("BA100", new { Token = tokenString, Expiration = token.ValidTo });
+                string refreshToken = TokenGenerator.GenerateRefreshToken();
+                var refreshTokenExpire = DateTime.Now.AddMinutes(_jwtOptions.RefreshExpiryMinutes);
+
+                await _tokenService.SaveTokenAsync(userData.UserId, tokenString, expireTime, refreshToken, refreshTokenExpire, cancellationToken);
+
+                return APIResponse("BA100", new
+                {
+                    Token = tokenString,
+                    Expiration = expireTime,
+                    RefreshToken = refreshToken,
+                    RefreshTokenExpireAt = refreshTokenExpire
+                });
             }
         }
         [HttpPost("Register")]
@@ -87,5 +99,21 @@ namespace BA.Api.Controllers
                 return APIResponse("BA100", null!);
             return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
+
+        [HttpPost("RefreshToken")]
+        public async Task<Dictionary<string, object>> Refresh([FromBody] RefreshTokenRequest request)
+        {
+            var result = await _loginService.GetRefreshToken(request.RefreshToken, _jwtOptions.Key, _jwtOptions.ExpiryMinutes, _jwtOptions.Issuer, _jwtOptions.Audience);
+            if (!result.IsSuccess)
+            {
+                return APIResponse(result.Error.ErrorMsg, null!);
+            }
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
+        }
+
+    }
+    public class RefreshTokenRequest
+    {
+        public string RefreshToken { get; set; } = string.Empty;
     }
 }

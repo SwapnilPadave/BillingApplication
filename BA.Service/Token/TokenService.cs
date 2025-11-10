@@ -11,7 +11,7 @@ namespace BA.Service.Token
             _unitOfWork = unitOfWork;
         }
 
-        public async Task SaveTokenAsync(int userId, string jwtToken, DateTime expireAt, CancellationToken cancellationToken)
+        public async Task SaveTokenAsync(int userId, string jwtToken, DateTime expireAt,string refreshToken, DateTime refreshTokenExpireAt, CancellationToken cancellationToken)
         {
             try
             {
@@ -20,6 +20,8 @@ namespace BA.Service.Token
                     UserId = userId,
                     Token = jwtToken,
                     ExpireAt = expireAt,
+                    RefreshToken = refreshToken,
+                    RefreshTokenExpireAt = refreshTokenExpireAt,
                     CreatedDate = DateTime.Now,
                     IsActive = true
                 };

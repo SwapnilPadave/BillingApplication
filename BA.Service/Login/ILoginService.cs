@@ -8,6 +8,7 @@ namespace BA.Service.Login
         Task<GetLoginDetails> GetLoginDetails(string userId, string password, CancellationToken cancellationToken);
         Task<Result> RegisterUserAsync(RegisterUserDto request, CancellationToken cancellationToken);
         Task<Result> Logout(int userId, CancellationToken cancellationToken);
+        Task<Result> GetRefreshToken(string refreshToken, string jwtKey, int expireInMin, string jwtIssuer, string jwtAudience);
         //Task<Result> GenerateAndSendOtp(RegisterUserDto request, CancellationToken cancellationToken);
     }
 }

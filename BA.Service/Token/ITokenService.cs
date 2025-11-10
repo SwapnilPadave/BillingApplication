@@ -2,6 +2,6 @@
 {
     public interface ITokenService
     {
-        Task SaveTokenAsync(int userId, string jwtToken, DateTime expireAt, CancellationToken cancellationToken);
+        Task SaveTokenAsync(int userId, string jwtToken, DateTime expireAt, string refreshToken, DateTime refreshTokenExpireAt, CancellationToken cancellationToken);
     }
 }
