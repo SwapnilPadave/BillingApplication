@@ -1,7 +1,9 @@
-﻿using BA.Database;
+﻿using Azure.Core;
+using BA.Database;
 using BA.Database.Infra;
 using BA.Dtos.CustomerDto;
 using BA.Entities.Customer;
+using BA.Utility.Content;
 using BA.Utility.Result;
 
 namespace BA.Service.Customer
@@ -73,7 +75,7 @@ namespace BA.Service.Customer
             }
         }
 
-        public async Task<Result> DeleteCustomerAsync(int userId, int id)
+        public async Task<Result> DeleteCustomerAsync(int userId, int id, bool isActive)
         {
             var transaction = await _unitOfWork.BeginTransactionAsync();
             try
@@ -83,13 +85,17 @@ namespace BA.Service.Customer
                 {
                     return Result.Failure(new Error("BA502"));
                 }
-                customerDetails.IsActive = false;
+                customerDetails.IsActive = isActive;
                 customerDetails.ModifiedBy = userId;
                 customerDetails.ModifiedDate = DateTime.Now;
                 _unitOfWork.CustomerDetailsRepository.Update(customerDetails);
                 await _unitOfWork.SaveChangesAsync();
                 await transaction.CommitAsync();
-                return Result.Success();
+
+                var status = isActive ? "activated" : "deactivated";
+
+                var replace = new Dictionary<string, string> { { "status", status } };
+                return Result.Success(ContentLoader.ReturnLanguageMessage("BA707", replace));
             }
             catch (Exception ex)
             {

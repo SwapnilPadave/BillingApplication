@@ -72,13 +72,13 @@ namespace BA.Api.Controllers
             return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
-        [HttpPost("Delete")]
-        public async Task<Dictionary<string, object>> DeleteAsync(int id)
+        [HttpPost("ActivateOrDeactivate")]
+        public async Task<Dictionary<string, object>> DeleteAsync(int id, bool isActive)
         {
-            var result = await _customerService.DeleteCustomerAsync(UserId, id);
+            var result = await _customerService.DeleteCustomerAsync(UserId, id, isActive);
             if (result.IsSuccess)
             {
-                return APIResponse("BA1104", result.Data!);
+                return APIResponse("BA100", result.Data!);
             }
             return APIFailureResponse(result.Error.ErrorMsg, null!);
         }

@@ -23,8 +23,8 @@ namespace BA.Service.Login
         private readonly DapperServiceHelper _dapper;
         public LoginService(SqlCommands sqlCommands
             , IUnitOfWork unitOfWork
-            , IEmailService emailService,
-DapperServiceHelper dapper)
+            , IEmailService emailService
+            ,DapperServiceHelper dapper)
         {
             _sqlCommands = sqlCommands;
             _unitOfWork = unitOfWork;

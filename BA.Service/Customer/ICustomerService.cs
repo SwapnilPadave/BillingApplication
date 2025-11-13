@@ -8,7 +8,7 @@ namespace BA.Service.Customer
     {
         Task<Result> AddCustomerAsync(int userId, AddCustomerDto customerDto);
         Task<Result> UpdateCustomerAsync(int userId, int id, UpdateCustomerDto customerDto);
-        Task<Result> DeleteCustomerAsync(int userId, int id);
+        Task<Result> DeleteCustomerAsync(int userId, int id, bool isActive);
         Task<Result> GetCustomerByIdAsync(int id);
         Task<Result> GetAllCustomersAsync();
         Task<CustomerDetails> GetCustomerByIdForConsumApiAsync(int id);

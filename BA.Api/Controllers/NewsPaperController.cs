@@ -61,14 +61,14 @@ namespace BA.Api.Controllers
             return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
-        [HttpPost("Delete")]
-        public async Task<Dictionary<string, object>> DeleteAsync(int id, CancellationToken cancellationToken)
-        {
-            var result = await _newsPaperService.DeleteNewsPaperAsync(UserId, id, cancellationToken);
-            if (result.IsSuccess)
-                return APIResponse("BA705", result.Data!);
-            return APIFailureResponse(result.Error.ErrorMsg, null!);
-        }
+        //[HttpPost("Delete")]
+        //public async Task<Dictionary<string, object>> DeleteAsync(int id, CancellationToken cancellationToken)
+        //{
+        //    var result = await _newsPaperService.DeleteNewsPaperAsync(UserId, id, cancellationToken);
+        //    if (result.IsSuccess)
+        //        return APIResponse("BA705", result.Data!);
+        //    return APIFailureResponse(result.Error.ErrorMsg, null!);
+        //}
 
         [HttpPost("ActivateOrDeactivate")]
         public async Task<Dictionary<string, object>> ActivateOrDeactivateAsync(int id, bool isActive, CancellationToken cancellationToken)

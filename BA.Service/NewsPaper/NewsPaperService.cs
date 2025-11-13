@@ -1,7 +1,9 @@
-﻿using BA.Database;
+﻿using Azure.Core;
+using BA.Database;
 using BA.Database.Infra;
 using BA.Dtos.NewsPaperDto;
 using BA.Entities.NewsPaper;
+using BA.Utility.Content;
 using BA.Utility.Result;
 
 namespace BA.Service.NewsPaper
@@ -132,7 +134,11 @@ namespace BA.Service.NewsPaper
                 var result = _unitOfWork.NewsPaperRepository.Update(newsPaper);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
                 await transaction.CommitAsync(cancellationToken);
-                return Result.Success();
+
+                var status = isActive ? "activated" : "deactivated";
+
+                var replace = new Dictionary<string, string> { { "status", status } };
+                return Result.Success(ContentLoader.ReturnLanguageMessage("BA707", replace));
             }
             catch (Exception ex)
             {
