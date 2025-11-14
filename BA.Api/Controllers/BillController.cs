@@ -1,4 +1,5 @@
-﻿using BA.Service.Bill;
+﻿using BA.Api.Infra.Model;
+using BA.Service.Bill;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BA.Api.Controllers
@@ -13,12 +14,12 @@ namespace BA.Api.Controllers
             _billService = billService;
         }
         [HttpPost("GenerateAndDownloadBill")]
-        public async Task<Dictionary<string, object>> GenerateAndDownloadBill(int id)
+        public async Task<ResponseModel> GenerateAndDownloadBill(int id)
         {
             var result = await _billService.GenerateBill(UserId, id);
             if (result.IsSuccess && result.Data != null)
             {
-                return APIResponse("BA507", result.Data);
+                return APISuccessResponse("BA507", result.Data);
             }
             return APIFailureResponse(result.Error.ErrorMsg, null!);
         }

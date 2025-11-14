@@ -10,5 +10,6 @@ namespace BA.Service.Users
         Task<Result> GetUserByIdAsync(int id, CancellationToken cancellationToken);
         Task<Result> UpdateUserAsync(int userId, int id, UpdateUserDto dto, CancellationToken cancellationToken);
         Task<Result> DeleteUserAsync(int userId, int id, CancellationToken cancellationToken);
+        Task<Result> ActivateOrDeactivateAsync(int userId, int id, bool isActive, CancellationToken cancellationToken);
     }
 }

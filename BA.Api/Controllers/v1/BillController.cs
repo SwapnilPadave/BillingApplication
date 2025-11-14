@@ -1,5 +1,6 @@
 ﻿using Asp.Versioning;
 using BA.Api.Infra.MediatorHandlers.GenerateBillHandler;
+using BA.Api.Infra.Model;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -18,11 +19,11 @@ namespace BA.Api.Controllers.v1
             _mediator = mediator;
         }
         [HttpPost("GenerateAndDownloadBill")]
-        public async Task<Dictionary<string, object>> GenerateAndDownloadBill([FromQuery] GenerateAndDownloadCustomerNewsPaperBillQuery request)
+        public async Task<ResponseModel> GenerateAndDownloadBill([FromQuery] GenerateAndDownloadCustomerNewsPaperBillQuery request)
         {
             var result = await _mediator.Send(request);
             if (result.IsSuccess)
-                return APIResponse("BA100", result.Data!);
+                return APISuccessResponse("BA100", result.Data!);
             return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
     }

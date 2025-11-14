@@ -11,7 +11,7 @@ namespace BA.Api.Infra.Validators
             RuleFor(x => x.Name)
                 .NotNull()
                 .NotEmpty()
-                .WithMessage(ContentLoader.ReturnLanguageData("Name is required."));
+                .WithMessage(ContentLoader.ReturnLanguageData("BA501"));
         }
     }
 }

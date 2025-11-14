@@ -21,7 +21,6 @@ namespace BA.Service.Customer
 
         public async Task<Result> AddCustomerAsync(int userId, AddCustomerDto customerDto)
         {
-            var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
                 var customerDetails = new CustomerDetails
@@ -35,12 +34,10 @@ namespace BA.Service.Customer
                 };
                 await _unitOfWork.CustomerDetailsRepository.AddAsync(customerDetails);
                 await _unitOfWork.SaveChangesAsync();
-                await transaction.CommitAsync();
                 return Result.Success();
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync();
                 await _sqlCommands.ExceptionLogToDatabase(ex);
                 return Result.Failure(new Error("BA501"));
             }
@@ -48,7 +45,6 @@ namespace BA.Service.Customer
 
         public async Task<Result> UpdateCustomerAsync(int userId, int id, UpdateCustomerDto customerDto)
         {
-            var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
                 var customerDetails = await _unitOfWork.CustomerDetailsRepository.GetAsync(customerDto.Id);
@@ -64,12 +60,10 @@ namespace BA.Service.Customer
                 customerDetails.ModifiedDate = DateTime.Now;
                 _unitOfWork.CustomerDetailsRepository.Update(customerDetails);
                 await _unitOfWork.SaveChangesAsync();
-                await transaction.CommitAsync();
                 return Result.Success();
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync();
                 await _sqlCommands.ExceptionLogToDatabase(ex);
                 return Result.Failure(new Error("BA501"));
             }
@@ -77,7 +71,6 @@ namespace BA.Service.Customer
 
         public async Task<Result> DeleteCustomerAsync(int userId, int id, bool isActive)
         {
-            var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
                 var customerDetails = await _unitOfWork.CustomerDetailsRepository.GetAsync(id);
@@ -90,16 +83,14 @@ namespace BA.Service.Customer
                 customerDetails.ModifiedDate = DateTime.Now;
                 _unitOfWork.CustomerDetailsRepository.Update(customerDetails);
                 await _unitOfWork.SaveChangesAsync();
-                await transaction.CommitAsync();
 
                 var status = isActive ? "activated" : "deactivated";
 
                 var replace = new Dictionary<string, string> { { "status", status } };
-                return Result.Success(ContentLoader.ReturnLanguageMessage("BA707", replace));
+                return Result.Success(ContentLoader.ReturnLanguageMessage("BA509", replace));
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync();
                 await _sqlCommands.ExceptionLogToDatabase(ex);
                 return Result.Failure(new Error("BA501"));
             }

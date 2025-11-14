@@ -2,7 +2,6 @@
 using BA.Database.Infra;
 using BA.Utility.AppSettings;
 using Microsoft.Extensions.Options;
-using System.IO;
 using System.Net;
 using System.Net.Mail;
 

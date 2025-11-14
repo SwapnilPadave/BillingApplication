@@ -41,7 +41,6 @@ namespace BA.Service.NewsPaper
 
         public async Task<Result> AddNewsPaperAsync(int userId, AddNewsPaperDto dto, CancellationToken cancellationToken)
         {
-            var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
             try
             {
                 var newsPaper = new NewsPaperDetails
@@ -54,12 +53,10 @@ namespace BA.Service.NewsPaper
                 };
                 var result = await _unitOfWork.NewsPaperRepository.AddAsync(newsPaper);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
-                await transaction.CommitAsync(cancellationToken);
                 return Result.Success(result);
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync(cancellationToken);
                 await _sqlCommands.ExceptionLogToDatabase(ex);
                 return Result.Failure(new Error("BA501"));
             }
@@ -67,7 +64,6 @@ namespace BA.Service.NewsPaper
 
         public async Task<Result> UpdateNewsPaperAsync(int userId, int id, UpdateNewsPaperDto dto, CancellationToken cancellationToken)
         {
-            var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
             try
             {
                 var newsPaper = await _unitOfWork.NewsPaperRepository.GetAsync(dto.Id);
@@ -81,12 +77,10 @@ namespace BA.Service.NewsPaper
                 newsPaper.ModifiedDate = DateTime.Now;
                 var result = _unitOfWork.NewsPaperRepository.Update(newsPaper);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
-                await transaction.CommitAsync(cancellationToken);
                 return Result.Success(result);
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync(cancellationToken);
                 await _sqlCommands.ExceptionLogToDatabase(ex);
                 return Result.Failure(new Error("BA501"));
             }
@@ -94,7 +88,6 @@ namespace BA.Service.NewsPaper
 
         public async Task<Result> DeleteNewsPaperAsync(int userId, int id, CancellationToken cancellationToken)
         {
-            var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
             try
             {
                 var newsPaper = await _unitOfWork.NewsPaperRepository.GetAsync(id);
@@ -107,12 +100,10 @@ namespace BA.Service.NewsPaper
                 newsPaper.ModifiedDate = DateTime.Now;
                 var result = _unitOfWork.NewsPaperRepository.Update(newsPaper);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
-                await transaction.CommitAsync(cancellationToken);
                 return Result.Success();
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync(cancellationToken);
                 await _sqlCommands.ExceptionLogToDatabase(ex);
                 return Result.Failure(new Error("BA501"));
             }
@@ -120,7 +111,6 @@ namespace BA.Service.NewsPaper
 
         public async Task<Result> ActivateOrDeactivateAsync(int userId, int id, bool isActive, CancellationToken cancellationToken)
         {
-            var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
             try
             {
                 var newsPaper = await _unitOfWork.NewsPaperRepository.GetAsync(id);
@@ -133,16 +123,14 @@ namespace BA.Service.NewsPaper
                 newsPaper.ModifiedDate = DateTime.Now;
                 var result = _unitOfWork.NewsPaperRepository.Update(newsPaper);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
-                await transaction.CommitAsync(cancellationToken);
 
                 var status = isActive ? "activated" : "deactivated";
 
                 var replace = new Dictionary<string, string> { { "status", status } };
-                return Result.Success(ContentLoader.ReturnLanguageMessage("BA707", replace));
+                return Result.Success(ContentLoader.ReturnLanguageMessage("BA509", replace));
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync(cancellationToken);
                 await _sqlCommands.ExceptionLogToDatabase(ex);
                 return Result.Failure(new Error("BA501"));
             }

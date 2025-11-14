@@ -1,44 +1,53 @@
-
 {
   //Common success messages
   "BA100": "Success.",
   "BA101": "Failure.",
   "BA103": "Otp generated and sent successfully.",
   "BA107": "User registered successfully.",
+  "BA108": "Invalid UserId or Password.",
+
+  //Login validation messages
+  "BA201": "Please enter user id.",
+  "BA202": "Please enter user password.",
 
   //Common error messages
-  "BA500": "Something went wrong",
+  "BA500": "Something went wrong.",
   "BA501": "An error occurred while processing your request.",
   "BA502": "Record not found.",
-  "BA503": "Request is null",
+  "BA503": "Request is null.",
   "BA504": "User does not exist.",
   "BA505": "Refresh token expired or invalid.",
   "BA506": "Failed to send email.",
   "BA507": "Failed to register user.",
   "BA508": "Email template not found.",
+  "BA509": "Record @status@ successfully.",
+  "BA510": "Validation failed.",
+  "BA511": "Unauthorize.",
+  "BA512": "Invalid request body.",
 
-  //News Paper Details
+  //News Paper Details validation messages
   "BA701": "News paper details added successfully.",
   "BA702": "Failed to create news paper details.",
   "BA703": "News paper details updated successfully.",
   "BA704": "Failed to update news paper details.",
   "BA705": "News paper details deleted successfully.",
   "BA706": "Failed to delete news paper details.",
-  "BA707": "Record @status@ successfully.",
-  "BA708": "Failed to update status of this record.",
+  "BA707": "Failed to update status of this record.",
 
-  //Admmin user validation messages
-  "BA1001": "Invalid UserId or Password.",
-  "BA1002": "User name is required.",
-  "BA1003": "User name must be between 3 and 100 characters.",
-  "BA1004": "Email address is required.",
-  "BA1005": "Please enter valid email address.",
-  "BA1006": "Mobile number is required.",
-  "BA1007": "Please enter valid mobile number.",
+  //User details validation messages
+  "BA1001": "User name is required.",
+  "BA1002": "User name must be between 3 and 200 characters.",
+  "BA1003": "Email address is required.",
+  "BA1004": "Please enter valid email address.",
+  "BA1005": "Mobile number is required.",
+  "BA1006": "Please enter valid mobile number.",
+  "BA1007": "Address is required.",
   "BA1008": "Please enter upto 100 charactors in address line.",
-  "BA1009": "User details added successfully.",
+  "BA1009": "Age must be greater than 0.",
+  "BA1010": "User details added successfully.",
+  "BA1011": "User details updated successfully.",
 
-  //Customer Details
+  //Customer Details validation messages
   "BA1101": "Customer details added successfully.",
   "BA1102": "Customer details updated successfully.",
   "BA1103": "Customer details deleted successfully.",
@@ -46,7 +55,7 @@
   "BA1105": "Customer details not found or failed to update customer details.",
   "BA1106": "Customer details not found or status unchanged.",
 
-  //Customer News Paper Bill Details
+  //Customer News Paper Bill Details validation messages
   "BA1201": "Customer bill details not found.",
   "BA1202": "Failed to update bill status.",
   "BA1203": "Bill details deleted successfully.",

@@ -3,6 +3,7 @@ using BA.Api.Infra.Authentication;
 using BA.Api.Infra.Extensions;
 using BA.Api.Infra.Filters;
 using BA.Api.Infra.Middleware;
+using BA.Api.Infra.Validators.UserValidations;
 using BA.Utility.AppSettings;
 using BA.Utility.Constant;
 using BA.Utility.Content;
@@ -64,19 +65,11 @@ namespace BA.Api
             builder.Services.RegisterRepositories();
             builder.Services.RegisterServices();
             builder.Services.ConfigureDatabase(builder.Configuration);
-            //builder.Services.AddAllFluentValidators();
             builder.Services.ConfigureCors(builder.Configuration);
             builder.Services.AddAutoMapper(typeof(Program));
             builder.Services.AddAllFluentValidators();
-
-            builder.Services.AddScoped(typeof(FluentValidationActionFilter<>));
-            builder.Services.AddValidatorsFromAssembly(assembly);
-            builder.Services.AddSingleton<IFilterProvider, FluentValidationFilterProvider>();
-
             builder.Services.AddEndpointsApiExplorer();
-
             builder.Services.AddSwaggerWithJwtAuthenticationSupport();
-            //IdentityModelEventSource.ShowPII = true;
             builder.Services.AddJwtAuthentication(builder.Configuration);
 
             builder.Services.Configure<SmtpSettings>(builder.Configuration.GetSection(Constants.SMTPSETTINGS_KEY));

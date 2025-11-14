@@ -2,6 +2,7 @@
 using BA.Database.Infra;
 using BA.Dtos.UserDtos;
 using BA.Entities.Users;
+using BA.Utility.Content;
 using BA.Utility.Result;
 
 namespace BA.Service.Users
@@ -18,7 +19,6 @@ namespace BA.Service.Users
 
         public async Task<Result> AddUserAsync(int userId, AddUserDto dto, CancellationToken cancellationToken)
         {
-            var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
             try
             {
                 var user = new User();
@@ -35,12 +35,10 @@ namespace BA.Service.Users
                 var result = await _unitOfWork.UserRepository.AddAsync(user);
                 await _unitOfWork.SaveChangesAsync();
 
-                await transaction.CommitAsync(cancellationToken);
                 return Result.Success();
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync(cancellationToken);
                 await _sqlCommands.ExceptionLogToDatabase(ex);
                 return Result.Failure(new Error("BA501"));
             }
@@ -59,7 +57,7 @@ namespace BA.Service.Users
 
         public async Task<Result> GetUserByIdAsync(int id, CancellationToken cancellationToken)
         {
-            var user = await _unitOfWork.UserRepository.GetAsync(id);
+            var user = await _unitOfWork.UserRepository.GetUserDetailsById(id);
             if (user == null)
             {
                 return Result.Failure(new Error("BA502"));
@@ -69,7 +67,6 @@ namespace BA.Service.Users
 
         public async Task<Result> UpdateUserAsync(int userId, int id, UpdateUserDto dto, CancellationToken cancellationToken)
         {
-            var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
             try
             {
                 var user = await _unitOfWork.UserRepository.GetAsync(id);
@@ -88,12 +85,10 @@ namespace BA.Service.Users
                 _unitOfWork.UserRepository.Update(user);
 
                 await _unitOfWork.SaveChangesAsync();
-                await transaction.CommitAsync(cancellationToken);
                 return Result.Success(user);
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync(cancellationToken);
                 await _sqlCommands.ExceptionLogToDatabase(ex);
                 return Result.Failure(new Error("BA501"));
             }
@@ -101,7 +96,6 @@ namespace BA.Service.Users
 
         public async Task<Result> DeleteUserAsync(int userId, int id, CancellationToken cancellationToken)
         {
-            var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
             try
             {
                 var user = await _unitOfWork.UserRepository.GetAsync(id);
@@ -116,12 +110,37 @@ namespace BA.Service.Users
                 _unitOfWork.UserRepository.Update(user);
 
                 await _unitOfWork.SaveChangesAsync();
-                await transaction.CommitAsync(cancellationToken);
                 return Result.Success();
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync(cancellationToken);
+                await _sqlCommands.ExceptionLogToDatabase(ex);
+                return Result.Failure(new Error("BA501"));
+            }
+        }
+
+        public async Task<Result> ActivateOrDeactivateAsync(int userId, int id, bool isActive, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var userDetails = await _unitOfWork.UserRepository.GetAsync(id);
+                if (userDetails == null)
+                {
+                    return Result.Failure(new Error("BA502"));
+                }
+                userDetails.IsActive = isActive;
+                userDetails.ModifiedBy = userId;
+                userDetails.ModifiedDate = DateTime.Now;
+                var result = _unitOfWork.UserRepository.Update(userDetails);
+                await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+                var status = isActive ? "activated" : "deactivated";
+
+                var replace = new Dictionary<string, string> { { "status", status } };
+                return Result.Success(ContentLoader.ReturnLanguageMessage("BA509", replace));
+            }
+            catch (Exception ex)
+            {
                 await _sqlCommands.ExceptionLogToDatabase(ex);
                 return Result.Failure(new Error("BA501"));
             }

@@ -1,5 +1,6 @@
 ﻿using Asp.Versioning;
 using BA.Api.Infra.MediatorHandlers.AuthHandler;
+using BA.Api.Infra.Model;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
@@ -17,24 +18,24 @@ namespace BA.Api.Controllers.v1
         }
 
         [HttpPost("Login")]
-        public async Task<Dictionary<string, object>> Login([FromBody] AuthenticationQuery request, CancellationToken cancellationToken)
+        public async Task<ResponseModel> Login([FromBody] AuthenticationQuery request, CancellationToken cancellationToken)
         {
             var result = await _mediator.Send(request);
 
             if (result.IsSuccess)
-                return APIResponse("BA100", result.Data!);
+                return APISuccessResponse("BA100", result.Data!);
             return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("RefreshToken")]
-        public async Task<Dictionary<string, object>> Refresh([FromBody] RefreshTokenCommand dto)
+        public async Task<ResponseModel> Refresh([FromBody] RefreshTokenCommand dto)
         {
             var result = await _mediator.Send(dto);
             if (!result.IsSuccess)
             {
                 return APIFailureResponse(result.Error.ErrorMsg, null!);
             }
-            return APIResponse("BA100", result.Data!);
+            return APISuccessResponse("BA100", result.Data!);
         }
     }
 }

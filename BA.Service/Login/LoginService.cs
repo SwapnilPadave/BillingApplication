@@ -1,5 +1,4 @@
-﻿using Azure.Core;
-using BA.Database;
+﻿using BA.Database;
 using BA.Database.Infra;
 using BA.Dtos.LoginDto;
 using BA.Entities.Token;
@@ -103,7 +102,6 @@ namespace BA.Service.Login
 
         public async Task<Result> RegisterUserAsync(RegisterUserDto request, CancellationToken cancellationToken)
         {
-            var transaction = await _unitOfWork.BeginTransactionAsync(cancellationToken);
             try
             {
                 var user = await _unitOfWork.UserRepository.IsUserExistsAsync(request.Email, request.MobileNumber);
@@ -122,12 +120,10 @@ namespace BA.Service.Login
 
                 await _unitOfWork.UserLoginMappingRepository.AddAsync(userLogin);
                 await _unitOfWork.SaveChangesAsync(cancellationToken);
-                await transaction.CommitAsync(cancellationToken);
                 return Result.Success();
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync(cancellationToken);
                 await _sqlCommands.ExceptionLogToDatabase(ex);
                 return Result.Failure(new Error("BA507"));
             }

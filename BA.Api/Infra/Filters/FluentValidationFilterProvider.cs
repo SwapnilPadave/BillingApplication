@@ -10,25 +10,31 @@ namespace BA.Api.Infra.Filters
 
         public void OnProvidersExecuting(FilterProviderContext context)
         {
-            foreach (var item in context.Results)
+            // Get the current action descriptor
+            if (context.ActionContext.ActionDescriptor is not ControllerActionDescriptor descriptor)
+                return;
+
+            // Loop through the parameters of the action
+            foreach (var parameter in descriptor.Parameters)
             {
-                if (item.Filter is not ControllerActionDescriptor descriptor) continue;
-
-                var parameter = descriptor.Parameters.FirstOrDefault(p => p.ParameterType.IsClass && !p.ParameterType.IsPrimitive && p.ParameterType != typeof(string));
-
-                if (parameter == null) continue;
+                // We only care about class-type parameters (like DTOs)
+                if (!parameter.ParameterType.IsClass || parameter.ParameterType == typeof(string))
+                    continue;
 
                 var validatorType = typeof(IValidator<>).MakeGenericType(parameter.ParameterType);
-
                 var serviceProvider = context.ActionContext.HttpContext.RequestServices;
                 var validator = serviceProvider.GetService(validatorType);
 
-                if (validator != null)
-                {
-                    var filterType = typeof(FluentValidationActionFilter<>).MakeGenericType(parameter.ParameterType);
-                    var filter = (IFilterMetadata)ActivatorUtilities.CreateInstance(serviceProvider, filterType);
-                    context.Results.Add(new FilterItem(new FilterDescriptor(filter, FilterScope.Global), filter));
-                }
+                // If no validator exists for this parameter type, skip it
+                if (validator == null)
+                    continue;
+
+                // Create a matching FluentValidationActionFilter<T> dynamically
+                var filterType = typeof(FluentValidationActionFilter<>).MakeGenericType(parameter.ParameterType);
+                var filter = (IFilterMetadata)ActivatorUtilities.CreateInstance(serviceProvider, filterType);
+
+                // Attach it as a global filter for this action
+                context.Results.Add(new FilterItem(new FilterDescriptor(filter, FilterScope.Global), filter));
             }
         }
 

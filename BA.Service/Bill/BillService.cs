@@ -26,7 +26,7 @@ namespace BA.Service.Bill
             , SqlCommands sqlCommand
             , IEmailService emailService
             , DapperServiceHelper dapper
-            ,IOptions<SmtpSettings> smtpSettings)
+            , IOptions<SmtpSettings> smtpSettings)
         {
             _unitOfWork = unitOfWork;
             _sqlCommand = sqlCommand;
@@ -37,9 +37,9 @@ namespace BA.Service.Bill
 
         public async Task<Result> AddCustomerBillDetails(int userId, AddCustomerBillDetailsDto dto)
         {
+            var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
-                var transaction = await _unitOfWork.BeginTransactionAsync();
 
                 var billDetails = new CustomerBillDetails
                 {
@@ -229,7 +229,6 @@ namespace BA.Service.Bill
         {
             try
             {
-                var transaction = await _unitOfWork.BeginTransactionAsync();
                 var billDetails = await _unitOfWork.BillRepository.GetAsync(id);
                 if (billDetails == null)
                 {
@@ -237,14 +236,12 @@ namespace BA.Service.Bill
                 }
                 billDetails.IsActive = false;
                 billDetails.ModifiedBy = userId;
-
+                _unitOfWork.BillRepository.Update(billDetails);
                 await _unitOfWork.SaveChangesAsync();
-                await transaction.CommitAsync();
                 return Result.Success(billDetails);
             }
             catch (Exception ex)
             {
-                await _unitOfWork.RollbackTransactionAsync();
                 await _sqlCommand.ExceptionLogToDatabase(ex);
                 return Result.Failure(new Error("BA501"));
             }
@@ -252,7 +249,6 @@ namespace BA.Service.Bill
 
         public async Task<Result> UpdateBillStatusAsync(int userId, int id, bool isBillPaid)
         {
-            var transaction = await _unitOfWork.BeginTransactionAsync();
             try
             {
                 var data = await _unitOfWork.BillRepository.GetAsync(id);
@@ -267,14 +263,11 @@ namespace BA.Service.Bill
                     data.ModifiedDate = DateTime.Now;
                     _unitOfWork.BillRepository.Update(data);
                     await _unitOfWork.SaveChangesAsync();
-                    await transaction.CommitAsync();
-
                     return Result.Success(data);
                 }
             }
             catch (Exception ex)
             {
-                await _unitOfWork.RollbackTransactionAsync();
                 await _sqlCommand.ExceptionLogToDatabase(ex);
                 return Result.Failure(new Error("BA501"));
             }

@@ -1,6 +1,9 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using BA.Api.Infra.Model;
+using BA.Utility.Constant;
+using BA.Utility.Content;
 
 namespace BA.Api.Infra.Filters
 {
@@ -19,11 +22,22 @@ namespace BA.Api.Infra.Filters
 
             if (model == null)
             {
-                context.Result = new BadRequestObjectResult(new
+                context.Result = new JsonResult(new ResponseModel
                 {
-                    statusCode = 400,
-                    errors = new[] { "Invalid request body" }
+                    StatusCode = 412,
+                    Message = ContentLoader.ReturnLanguageData("BA512",
+                              Convert.ToString(context.HttpContext.Request.Headers[Constants.HEADER_LANGUAG_EFIELD])),
+                    Data = null,
+                    Errors = new List<Errors>
+                    {
+                        new Errors
+                        {
+                            PropertyName = "Request",
+                            ErrorMessages = new[] { "Invalid request body or missing data." }
+                        }
+                    }
                 });
+
                 return;
             }
 
@@ -31,11 +45,24 @@ namespace BA.Api.Infra.Filters
 
             if (!result.IsValid)
             {
-                context.Result = new BadRequestObjectResult(new
+                var errorList = result.Errors
+                    .GroupBy(e => e.PropertyName)
+                    .Select(group => new Errors
+                    {
+                        PropertyName = group.Key,
+                        ErrorMessages = group.Select(e => e.ErrorMessage).ToArray()
+                    })
+                    .ToList();
+
+                context.Result = new JsonResult(new ResponseModel
                 {
-                    statusCode = 400,
-                    errors = result.Errors.Select(e => e.ErrorMessage).ToList()
+                    StatusCode = 412,
+                    Message = ContentLoader.ReturnLanguageData("BA510"
+                              , Convert.ToString(context.HttpContext.Request.Headers[Constants.HEADER_LANGUAG_EFIELD])),
+                    Data = null,
+                    Errors = errorList
                 });
+
                 return;
             }
 

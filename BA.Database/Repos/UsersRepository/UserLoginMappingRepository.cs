@@ -28,7 +28,7 @@ namespace BA.Database.Repos.UsersRepository
                                   Admin = l.IsAdmin
                               }).FirstOrDefaultAsync();
 
-            return data ?? null;
+            return data ?? new GetLoginDetails();
         }
     }
 }

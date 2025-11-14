@@ -7,6 +7,7 @@ namespace BA.Database.Repos.UserRepository
     public interface IUserRepository : IRepository<User>
     {
         Task<List<GetUserDto>> GetUsersAsync(CancellationToken cancellationToken);
+        Task<GetUserDto?> GetUserDetailsById(int id);
         Task<User?> IsUserExistsAsync(string email, string mobileNumber);
     }
 }

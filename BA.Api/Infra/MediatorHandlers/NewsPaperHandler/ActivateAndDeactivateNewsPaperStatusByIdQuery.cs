@@ -34,9 +34,9 @@ namespace BA.Api.Infra.MediatorHandlers.NewsPaperHandler
                     var status = request.IsActive ? "activated" : "deactivated";
 
                     var replace = new Dictionary<string, string> { { "status", status } };
-                    return Result.Success(ContentLoader.ReturnLanguageMessage("BA707", replace));
+                    return Result.Success(ContentLoader.ReturnLanguageMessage("BA509", replace));
                 }
-                return Result.Failure(new Error("BA708"));
+                return Result.Failure(new Error("BA707"));
             }
         }
     }

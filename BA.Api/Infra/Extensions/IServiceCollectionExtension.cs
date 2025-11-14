@@ -71,9 +71,9 @@ namespace BA.Api.Infra.Extensions
 
         public static IServiceCollection AddAllFluentValidators(this IServiceCollection services)
         {
+            services.AddValidatorsFromAssemblyContaining<AddUserValidator>();
             services.AddScoped(typeof(FluentValidationActionFilter<>));
             services.AddSingleton<IFilterProvider, FluentValidationFilterProvider>();
-            services.AddValidatorsFromAssemblyContaining<UserValidator>();
             return services;
         }
 

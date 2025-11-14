@@ -15,25 +15,38 @@ namespace BA.Database.Repos.UserRepository
 
         public async Task<List<GetUserDto>> GetUsersAsync(CancellationToken cancellationToken)
         {
-            var users = new List<GetUserDto>();
-            users = await (from u in _context.Users
-                           select new GetUserDto
-                           {
-                               Id = u.Id,
-                               Name = u.Name,
-                               MobileNumber = u.MobileNumber,
-                               Email = u.Email,
-                               Address = u.Address,
-                               DateOfBirth = u.DateOfBirth,
-                               Age = u.Age,
-                               CreatedDate = u.CreatedDate,
-                               ModifiedDate = u.ModifiedDate,
-                               CreatedBy = u.CreatedBy,
-                               ModifiedBy = u.ModifiedBy,
-                               IsActive = u.IsActive
-                           }).ToListAsync();
+            var users = await (from u in _context.Users
+                               select new GetUserDto
+                               {
+                                   Id = u.Id,
+                                   Name = u.Name,
+                                   MobileNumber = u.MobileNumber,
+                                   Email = u.Email,
+                                   Address = u.Address,
+                                   DateOfBirth = u.DateOfBirth,
+                                   Age = u.Age,
+                                   IsActive = u.IsActive
+                               }).ToListAsync();
 
             return users;
+        }
+
+        public async Task<GetUserDto?> GetUserDetailsById(int id)
+        {
+            var data = await (from u in _context.Users
+                              where u.Id == id
+                              select new GetUserDto
+                              {
+                                  Id = u.Id,
+                                  Name = u.Name,
+                                  MobileNumber = u.MobileNumber,
+                                  Email = u.Email,
+                                  Address = u.Address,
+                                  DateOfBirth = u.DateOfBirth,
+                                  Age = u.Age,
+                                  IsActive = u.IsActive
+                              }).FirstOrDefaultAsync();
+            return data;
         }
 
         public async Task<User?> IsUserExistsAsync(string email, string mobileNumber)

@@ -1,6 +1,5 @@
 ﻿using BA.Utility.Folder;
 using Newtonsoft.Json;
-using static iText.Svg.SvgConstants;
 
 namespace BA.Utility.Content
 {

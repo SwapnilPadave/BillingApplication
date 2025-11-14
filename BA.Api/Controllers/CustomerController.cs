@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BA.Api.Infra.Model;
 using BA.Api.Infra.Requests.CustomerRequest;
 using BA.Dtos.CustomerDto;
 using BA.Service.Customer;
@@ -27,58 +28,58 @@ namespace BA.Api.Controllers
         }
 
         [HttpPost("Add")]
-        public async Task<Dictionary<string, object>> AddAsync([FromBody] AddCustomerRequest customerDto)
+        public async Task<ResponseModel> AddAsync([FromBody] AddCustomerRequest customerDto)
         {
             var request = _mapper.Map<AddCustomerDto>(customerDto);
             var result = await _customerService.AddCustomerAsync(UserId, request);
             if (result.IsSuccess)
             {
-                return APIResponse("BA1100", result.Data!);
+                return APISuccessResponse("BA1100", result.Data!);
             }
             return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("Update")]
-        public async Task<Dictionary<string, object>> UpdateAsync(int id, [FromBody] UpdateCustomerRequest customerDto)
+        public async Task<ResponseModel> UpdateAsync(int id, [FromBody] UpdateCustomerRequest customerDto)
         {
             var request = _mapper.Map<UpdateCustomerDto>(customerDto);
             var result = await _customerService.UpdateCustomerAsync(UserId, id, request);
             if (result.IsSuccess)
             {
-                return APIResponse("BA1102", result.Data!);
+                return APISuccessResponse("BA1102", result.Data!);
             }
             return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpGet("GetById")]
-        public async Task<Dictionary<string, object>> GetByIdAsync(int id)
+        public async Task<ResponseModel> GetByIdAsync(int id)
         {
             var result = await _customerService.GetCustomerByIdAsync(id);
             if (result.IsSuccess)
             {
-                return APIResponse("BA100", result.Data!);
+                return APISuccessResponse("BA100", result.Data!);
             }
             return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpGet("GetAll")]
-        public async Task<Dictionary<string, object>> GetAllAsync()
+        public async Task<ResponseModel> GetAllAsync()
         {
             var result = await _customerService.GetAllCustomersAsync();
             if (result.IsSuccess)
             {
-                return APIResponse("BA100", result.Data!);
+                return APISuccessResponse("BA100", result.Data!);
             }
             return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("ActivateOrDeactivate")]
-        public async Task<Dictionary<string, object>> DeleteAsync(int id, bool isActive)
+        public async Task<ResponseModel> DeleteAsync(int id, bool isActive)
         {
             var result = await _customerService.DeleteCustomerAsync(UserId, id, isActive);
             if (result.IsSuccess)
             {
-                return APIResponse("BA100", result.Data!);
+                return APISuccessResponse("BA100", result.Data!);
             }
             return APIFailureResponse(result.Error.ErrorMsg, null!);
         }

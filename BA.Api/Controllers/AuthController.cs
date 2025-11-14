@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using BA.Api.Infra.Authentication;
-using BA.Api.Infra.MediatorHandlers.AuthHandler;
+using BA.Api.Infra.Model;
 using BA.Api.Infra.Requests.LoginRequest;
 using BA.Dtos.LoginDto;
 using BA.Service.Login;
@@ -35,12 +35,12 @@ namespace BA.Api.Controllers
         }
 
         [HttpPost("Login")]
-        public async Task<Dictionary<string, object>> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
+        public async Task<ResponseModel> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
         {
             var userData = await _loginService.GetLoginDetails(request.UserId, request.Password, cancellationToken);
-            if (userData == null)
+            if (string.IsNullOrWhiteSpace(userData.UserName))
             {
-                return APIResponse("BA504", null!);
+                return APISuccessResponse("BA504", null!);
             }
             else
             {
@@ -70,7 +70,7 @@ namespace BA.Api.Controllers
 
                 await _tokenService.SaveTokenAsync(userData.UserId, tokenString, expireTime, refreshToken, refreshTokenExpire, cancellationToken);
 
-                return APIResponse("BA100", new
+                return APISuccessResponse("BA100", new
                 {
                     Token = tokenString,
                     Expiration = expireTime,
@@ -80,33 +80,33 @@ namespace BA.Api.Controllers
             }
         }
         [HttpPost("Register")]
-        public async Task<Dictionary<string, object>> Register([FromBody] RegisterUserRequest request, CancellationToken cancellationToken)
+        public async Task<ResponseModel> Register([FromBody] RegisterUserRequest request, CancellationToken cancellationToken)
         {
             var requetDto = _mapper.Map<RegisterUserDto>(request);
             var result = await _loginService.RegisterUserAsync(requetDto, cancellationToken);
             if (result.IsSuccess)
-                return APIResponse("BA107", result.Data!);
+                return APISuccessResponse("BA107", result.Data!);
             return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [Authorize]
         [HttpPost("Logout")]
-        public async Task<Dictionary<string, object>> Logout(CancellationToken cancellationToken)
+        public async Task<ResponseModel> Logout(CancellationToken cancellationToken)
         {
             ExtractUserContext();
             var result = await _loginService.Logout(UserId, cancellationToken);
             if (result.IsSuccess)
-                return APIResponse("BA100", null!);
+                return APISuccessResponse("BA100", null!);
             return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("RefreshToken")]
-        public async Task<Dictionary<string, object>> Refresh([FromBody] RefreshTokenRequest request)
+        public async Task<ResponseModel> Refresh([FromBody] RefreshTokenRequest request)
         {
             var result = await _loginService.GetRefreshToken(request.RefreshToken, _jwtOptions.Key, _jwtOptions.ExpiryMinutes, _jwtOptions.Issuer, _jwtOptions.Audience);
             if (!result.IsSuccess)
             {
-                return APIResponse(result.Error.ErrorMsg, null!);
+                return APISuccessResponse(result.Error.ErrorMsg, null!);
             }
             return APIFailureResponse(result.Error.ErrorMsg, null!);
         }

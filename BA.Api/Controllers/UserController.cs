@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BA.Api.Infra.Model;
 using BA.Api.Infra.Requests.UserRequests;
 using BA.Dtos.UserDtos;
 using BA.Service.Users;
@@ -22,54 +23,58 @@ namespace BA.Api.Controllers
         }
 
         [HttpPost("Add")]
-        public async Task<Dictionary<string, object>> AddAsync([FromBody] AddUserRequest request, CancellationToken cancellationToken)
+        public async Task<ResponseModel> AddAsync([FromBody] AddUserRequest request, CancellationToken cancellationToken)
         {
-            if(!ModelState.IsValid)
-            {
-                return APIResponse("BA101", ModelState);
-            }
-
             var user = _mapper.Map<AddUserDto>(request);
             var result = await _userService.AddUserAsync(UserId, user, cancellationToken);
             if (result.IsSuccess)
-                return APIResponse("BA1009", result.Data!);
+                return APISuccessResponse("BA1010", result.Data!);
             return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
-        [HttpPost("GetAll")]
-        public async Task<Dictionary<string, object>> GetAsync(CancellationToken cancellationToken)
+        [HttpGet("GetAll")]
+        public async Task<ResponseModel> GetAsync(CancellationToken cancellationToken)
         {
             var result = await _userService.GetUsersAsync(cancellationToken);
             if (result.IsSuccess)
-                return APIResponse("BA100", result.Data!);
+                return APISuccessResponse("BA100", result.Data!);
             return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("GetById")]
-        public async Task<Dictionary<string, object>> GetByIdAsync(int id, CancellationToken cancellationToken)
+        public async Task<ResponseModel> GetByIdAsync(int id, CancellationToken cancellationToken)
         {
             var result = await _userService.GetUserByIdAsync(id, cancellationToken);
             if (result.IsSuccess)
-                return APIResponse("BA100", result.Data!);
+                return APISuccessResponse("BA100", result.Data!);
             return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("Update")]
-        public async Task<Dictionary<string, object>> UpdateAsync(int id, [FromBody] UpdateUserRequest request, CancellationToken cancellationToken)
+        public async Task<ResponseModel> UpdateAsync(int id, [FromBody] UpdateUserRequest request, CancellationToken cancellationToken)
         {
             var user = _mapper.Map<UpdateUserDto>(request);
             var result = await _userService.UpdateUserAsync(UserId, id, user, cancellationToken);
             if (result.IsSuccess)
-                return APIResponse("BA100", result.Data!);
+                return APISuccessResponse("BA1011", result.Data!);
             return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpDelete("Delete")]
-        public async Task<Dictionary<string, object>> DeleteAsync(int id, CancellationToken cancellationToken)
+        public async Task<ResponseModel> DeleteAsync(int id, CancellationToken cancellationToken)
         {
             var result = await _userService.DeleteUserAsync(UserId, id, cancellationToken);
             if (result.IsSuccess)
-                return APIResponse("BA100", result.Data!);
+                return APISuccessResponse("BA100", result.Data!);
+            return APIFailureResponse(result.Error.ErrorMsg, null!);
+        }
+
+        [HttpPost("ActivateOrDeactivate")]
+        public async Task<ResponseModel> ActivateOrDeactivateAsync(int id, bool isActive, CancellationToken cancellationToken)
+        {
+            var result = await _userService.ActivateOrDeactivateAsync(UserId, id, isActive, cancellationToken);
+            if (result.IsSuccess)
+                return APISuccessResponse("BA100", result.Data!);
             return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
     }

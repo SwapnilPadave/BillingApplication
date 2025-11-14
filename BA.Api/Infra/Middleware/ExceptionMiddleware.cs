@@ -13,20 +13,21 @@ namespace BA.Api.Infra.Middleware
 
         public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
         {
-            _logger = logger;
             _next = next;
+            _logger = logger;
         }
 
-        public async Task InvokeAsync(HttpContext httpContext)
+        public async Task InvokeAsync(HttpContext context)
         {
             try
             {
-                await _next(httpContext);
+                await _next(context);
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Something went wrong: {ex}");
-                await HandleExceptionAsync(httpContext, ex);
+                _logger.LogError(ex, "Unhandled Exception occurred.");
+
+                await HandleExceptionAsync(context, ex);
             }
         }
 
@@ -34,34 +35,37 @@ namespace BA.Api.Infra.Middleware
         {
             context.Response.ContentType = "application/json";
 
-            var exceptionData = GetExceptionDetails(exception, context);
-            context.Response.StatusCode = exceptionData.StatusCode;
-            await context.Response.WriteAsync(exceptionData.ToString());
-        }
-
-        private static ResponseModel GetExceptionDetails(Exception exception, HttpContext context)
-        {
-            //string errorMessage = string.Empty;
-
-            var model = new ResponseModel();
+            var response = new ResponseModel
+            {
+                Errors = new()
+            };
 
             switch (exception)
             {
                 case UnauthorizedAccessException:
+                    response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                    response.Message = ContentLoader.ReturnLanguageData(
+                        "BA511", Convert.ToString(context.Request.Headers[Constants.HEADER_LANGUAG_EFIELD])
+                    );
+                    break;
 
-                    model.Message = ContentLoader.ReturnLanguageData("Unauthorize", Convert.ToString(context.Request.Headers[Constants.HEADER_LANGUAG_EFIELD]));
-                    model.StatusCode = (int)HttpStatusCode.Unauthorized;
+                case ValidationException valEx:
+                    response.StatusCode = (int)HttpStatusCode.PreconditionFailed;
+                    response.Message = ContentLoader.ReturnLanguageData(
+                        valEx.Message, Convert.ToString(context.Request.Headers[Constants.HEADER_LANGUAG_EFIELD])
+                    );
                     break;
-                case ValidationException:
-                    model.Message = ContentLoader.ReturnLanguageData(exception.Message, Convert.ToString(context.Request.Headers[Constants.HEADER_LANGUAG_EFIELD]));
-                    model.StatusCode = (int)HttpStatusCode.PreconditionFailed;
-                    break;
+
                 default:
-                    model.Message = ContentLoader.ReturnLanguageData("MSG500", Convert.ToString(context.Request.Headers[Constants.HEADER_LANGUAG_EFIELD]));
-                    model.StatusCode = (int)HttpStatusCode.InternalServerError;
+                    response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                    response.Message = ContentLoader.ReturnLanguageData(
+                        "BA501", Convert.ToString(context.Request.Headers[Constants.HEADER_LANGUAG_EFIELD])
+                    );
                     break;
             }
-            return model;
+
+            context.Response.StatusCode = response.StatusCode;
+            await context.Response.WriteAsync(response.ToString());
         }
     }
 }

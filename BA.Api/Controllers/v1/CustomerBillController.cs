@@ -1,5 +1,6 @@
 ﻿using Asp.Versioning;
 using BA.Api.Infra.MediatorHandlers.CustomerNewsPaperBillHandler;
+using BA.Api.Infra.Model;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -19,67 +20,67 @@ namespace BA.Api.Controllers.v1
         }
 
         [HttpPost("Add")]
-        public async Task<Dictionary<string, object>> Add([FromBody] AddNewsPaperBillCommand command)
+        public async Task<ResponseModel> Add([FromBody] AddNewsPaperBillCommand command)
         {
             var result = await _mediator.Send(command);
             if (result.IsSuccess)
             {
-                return APIResponse("BA1205", result.Data!);
+                return APISuccessResponse("BA1205", result.Data!);
             }
             return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("GetById")]
-        public async Task<Dictionary<string, object>> GetById([FromQuery] GetCustomerNewsPaperBillDetailsByIdQuery query)
+        public async Task<ResponseModel> GetById([FromQuery] GetCustomerNewsPaperBillDetailsByIdQuery query)
         {
             var result = await _mediator.Send(query);
             if (result.IsSuccess)
             {
-                return APIResponse("BA100", result.Data!);
+                return APISuccessResponse("BA100", result.Data!);
             }
             return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpGet("GetAll")]
-        public async Task<Dictionary<string, object>> GetAll()
+        public async Task<ResponseModel> GetAll()
         {
             var result = await _mediator.Send(new GetAllCustomerBillDetailsQuery());
             if (result.IsSuccess)
             {
-                return APIResponse("BA100", result.Data!);
+                return APISuccessResponse("BA100", result.Data!);
             }
             return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("UpdateStatus")]
-        public async Task<Dictionary<string, object>> UpdateStatus([FromQuery] UpdateCustomerNewsPapaerBillStatusQuery query)
+        public async Task<ResponseModel> UpdateStatus([FromQuery] UpdateCustomerNewsPapaerBillStatusQuery query)
         {
             var result = await _mediator.Send(query);
             if (result.IsSuccess)
             {
-                return APIResponse("BA1206", null!);
+                return APISuccessResponse("BA1206", null!);
             }
             return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpDelete("Delete")]
-        public async Task<Dictionary<string, object>> Delete([FromQuery] DeleteCustomerNewsPaperBillQuery query)
+        public async Task<ResponseModel> Delete([FromQuery] DeleteCustomerNewsPaperBillQuery query)
         {
             var result = await _mediator.Send(query);
             if (result.IsSuccess)
             {
-                return APIResponse("BA1207", null!);
+                return APISuccessResponse("BA1207", null!);
             }
             return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
 
         [HttpPost("GetTotalMonthDaysCount")]
-        public async Task<Dictionary<string, object>> GetMonthDaysCount([FromBody] GetMonthDaysCountFromDateRangeCommand command)
+        public async Task<ResponseModel> GetMonthDaysCount([FromBody] GetMonthDaysCountFromDateRangeCommand command)
         {
             var result = await _mediator.Send(command);
             if (result.IsSuccess)
             {
-                return APIResponse("BA100", result.Data!);
+                return APISuccessResponse("BA100", result.Data!);
             }
             return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
