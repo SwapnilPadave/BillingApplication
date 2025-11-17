@@ -24,6 +24,7 @@
   "BA510": "Validation failed.",
   "BA511": "Unauthorize.",
   "BA512": "Invalid request body.",
+  "BA513": "File is either empty or invalid file format uploaded.",
 
   //News Paper Details validation messages
   "BA701": "News paper details added successfully.",
@@ -54,6 +55,9 @@
   "BA1104": "Customer details not found or failed to add customer details.",
   "BA1105": "Customer details not found or failed to update customer details.",
   "BA1106": "Customer details not found or status unchanged.",
+  "BA1107": "Please enter building name.",
+  "BA1108": "Please enter room no.",
+  "BA1109": "Please enter area name.",
 
   //Customer News Paper Bill Details validation messages
   "BA1201": "Customer bill details not found.",
@@ -63,5 +67,13 @@
   "BA1205": "Bill Details Added Successfully.",
   "BA1206": "Bill status updated Successfully.",
   "BA1207": "Bill details deleted Successfully.",
-  "BA1208": "Bill details updated Successfully."
+  "BA1208": "Bill details updated Successfully.",
+
+  //Student Details validation messages
+  "BA1301": "Failed to upload students records.",
+  "BA1302": "Student name is required.",
+  "BA1303": "Student email is required.",
+  "BA1304": "Student address is required.",
+  "BA1305": "Student Name must be at least 2 characters and can contain letters, spaces, and the following characters: { '  `  - }.",
+  "BA1306": "Student Address must be at least 3 characters and can contain letters, numbers, spaces, and the following characters: { ,  .  '  - }."
 }

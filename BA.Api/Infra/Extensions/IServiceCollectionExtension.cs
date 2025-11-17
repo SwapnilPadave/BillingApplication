@@ -9,6 +9,7 @@ using BA.Database.Repos.EmailTemplateRepository;
 using BA.Database.Repos.EmployeeRepository;
 using BA.Database.Repos.GeneratedBillRepository;
 using BA.Database.Repos.NewsPapersReposiotry;
+using BA.Database.Repos.StudentRepository;
 using BA.Database.Repos.TokenRepository;
 using BA.Database.Repos.UserRepository;
 using BA.Database.Repos.UsersRepository;
@@ -50,6 +51,7 @@ namespace BA.Api.Infra.Extensions
             services.AddTransient(typeof(ICustomerBillDetailsRepository), typeof(CustomerBillDetailsRepository));
             services.AddTransient(typeof(IGeneratedBillDetailsRepository), typeof(GeneratedBillDetailsRepository));
             services.AddTransient(typeof(IEmailTemplateRepository), typeof(EmailTemplateRepository));
+            services.AddTransient(typeof(IStudentRepository), typeof(StudentRepository));
 
             services.AddTransient<SqlCommands>();
             services.AddTransient<SqlServiceHelper>();

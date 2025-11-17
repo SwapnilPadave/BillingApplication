@@ -5,6 +5,7 @@ using BA.Database.Repos.EmailTemplateRepository;
 using BA.Database.Repos.EmployeeRepository;
 using BA.Database.Repos.GeneratedBillRepository;
 using BA.Database.Repos.NewsPapersReposiotry;
+using BA.Database.Repos.StudentRepository;
 using BA.Database.Repos.TokenRepository;
 using BA.Database.Repos.UserRepository;
 using BA.Database.Repos.UsersRepository;
@@ -24,11 +25,14 @@ namespace BA.Database.Infra
         public ICustomerBillDetailsRepository CustomerBillDetailsRepository { get; }
         public IGeneratedBillDetailsRepository GeneratedBillDetailsRepository { get; }
         public IEmailTemplateRepository EmailTemplateRepository { get; }
+        public IStudentRepository StudentRepository { get; }
 
-        // Methods for managing the database context and transactions
+
+        #region // Methods for managing the database context and transactions
         public Task<bool> SaveChangesAsync(CancellationToken cancellationToken = default);
         Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
         Task CommitTransactionAsync(CancellationToken cancellationToken = default);
-        Task RollbackTransactionAsync(CancellationToken cancellationToken = default);
+        Task RollbackTransactionAsync(CancellationToken cancellationToken = default); 
+        #endregion
     }
 }

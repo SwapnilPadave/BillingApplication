@@ -49,13 +49,13 @@ namespace BA.Api.Controllers
         //    return response;
         //}
 
-        protected ResponseModel APIFailureResponse(string msgCode, string languageCode = "", int statusCode = 400, List<Errors>? errors = null)
+        protected ResponseModel APIFailureResponse(string msgCode, object result, string languageCode = "", int statusCode = 400, List<Errors>? errors = null)
         {
             return new ResponseModel
             {
                 StatusCode = statusCode,
                 Message = ContentLoader.ReturnLanguageData(msgCode, languageCode),
-                Data = null,
+                Data = result,
                 Errors = errors ?? new List<Errors>()
             };
         }

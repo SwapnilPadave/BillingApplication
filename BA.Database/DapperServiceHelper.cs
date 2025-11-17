@@ -2,7 +2,6 @@
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
-using System.Reflection;
 
 namespace BA.Database
 {
@@ -49,6 +48,18 @@ namespace BA.Database
         {
             using var connection = new SqlConnection(_context.Database.GetConnectionString());
             return await connection.QueryFirstOrDefaultAsync<T>(sql, parameters);
+        }
+
+        public async Task<T> ExecuteStoredProcAsync<T>(string storedProcedure, DynamicParameters parameters)
+        {
+            using var connection = new SqlConnection(_context.Database.GetConnectionString());
+
+            var result =  await connection.QueryFirstOrDefaultAsync<T>(
+                storedProcedure,
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
+            return result!;
         }
     }
 }
