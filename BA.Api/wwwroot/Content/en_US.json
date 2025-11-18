@@ -25,6 +25,18 @@
   "BA511": "Unauthorize.",
   "BA512": "Invalid request body.",
   "BA513": "File is either empty or invalid file format uploaded.",
+  "BA514": "Invalid file format. Only Excel with extension .xlsx files are supported.",
+  "BA515": "Invalid file format. please do not change any column header name.",
+  "BA516": "Internal server error.",
+
+  //Sql server error messages
+  "BA551": "SQL Server is unreachable. Please contact support.",
+  "BA552": "The database is unavailable or cannot be opened.",
+  "BA553": "Invalid SQL login credentials were provided.",
+  "BA554": "Cannot connect to the SQL Server. Check network or server status.",
+  "BA555": "Database request timed out. Please try again.",
+  "BA556": "A deadlock occurred. Please retry the operation.",
+  "BA557": "Duplicate record detected. This value already exists.",
 
   //News Paper Details validation messages
   "BA701": "News paper details added successfully.",

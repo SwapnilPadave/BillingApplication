@@ -1,4 +1,5 @@
-﻿using ClosedXML.Excel;
+﻿using BA.Utility.Content;
+using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Http;
@@ -16,7 +17,7 @@ public static class ExcelReaderHelper
         var extension = Path.GetExtension(file.FileName).ToLower();
 
         if (extension != ".xlsx")
-            throw new Exception("Invalid file format. Only Excel with extension .xlsx files are supported.");
+            throw new Exception("BA514");
 
         using (var stream = new MemoryStream())
         {
@@ -66,6 +67,11 @@ public static class ExcelReaderHelper
     {
         var result = new List<T>();
 
+        var extension = Path.GetExtension(file.FileName).ToLower();
+
+        if (extension != ".xlsx")
+            throw new Exception("BA514");
+
         using var stream = new MemoryStream();
         file.CopyTo(stream);
         using var workbook = new XLWorkbook(stream);
@@ -103,6 +109,10 @@ public static class ExcelReaderHelper
                         object? convertedValue = Convert.ChangeType(cellValue, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType);
                         prop.SetValue(obj, convertedValue);
                     }
+                }
+                else
+                {
+                    throw new Exception("BA515");
                 }
             }
 
@@ -204,5 +214,4 @@ public static class ExcelReaderHelper
         workbook.SaveAs(stream);
         return Convert.ToBase64String(stream.ToArray());
     }
-
 }

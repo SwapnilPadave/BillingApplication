@@ -1,6 +1,7 @@
 ﻿using BA.Api.Infra.Model;
 using BA.Utility.Constant;
 using BA.Utility.Content;
+using BA.Utility.Enum;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
@@ -30,7 +31,7 @@ namespace BA.Api.Controllers
         {
             return new ResponseModel
             {
-                StatusCode = 200,
+                StatusCode = (int)ApiStatusCodeEnum.Success,
                 Message = ContentLoader.ReturnLanguageData(msgCode, languageCode),
                 Data = result,
                 Errors = new List<Errors>()
@@ -49,7 +50,7 @@ namespace BA.Api.Controllers
         //    return response;
         //}
 
-        protected ResponseModel APIFailureResponse(string msgCode, object result, string languageCode = "", int statusCode = 400, List<Errors>? errors = null)
+        protected ResponseModel APIFailureResponse(string msgCode, object result, string languageCode = "", int statusCode = (int)ApiStatusCodeEnum.BadRequest, List<Errors>? errors = null)
         {
             return new ResponseModel
             {

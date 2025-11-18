@@ -1,9 +1,10 @@
-﻿using FluentValidation;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using BA.Api.Infra.Model;
+﻿using BA.Api.Infra.Model;
 using BA.Utility.Constant;
 using BA.Utility.Content;
+using BA.Utility.Enum;
+using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace BA.Api.Infra.Filters
 {
@@ -24,7 +25,7 @@ namespace BA.Api.Infra.Filters
             {
                 context.Result = new JsonResult(new ResponseModel
                 {
-                    StatusCode = 412,
+                    StatusCode = (int)ApiStatusCodeEnum.PreconditionFailed,
                     Message = ContentLoader.ReturnLanguageData("BA512",
                               Convert.ToString(context.HttpContext.Request.Headers[Constants.HEADER_LANGUAG_EFIELD])),
                     Data = null,
@@ -56,7 +57,7 @@ namespace BA.Api.Infra.Filters
 
                 context.Result = new JsonResult(new ResponseModel
                 {
-                    StatusCode = 412,
+                    StatusCode = (int)ApiStatusCodeEnum.PreconditionFailed,
                     Message = ContentLoader.ReturnLanguageData("BA510"
                               , Convert.ToString(context.HttpContext.Request.Headers[Constants.HEADER_LANGUAG_EFIELD])),
                     Data = null,

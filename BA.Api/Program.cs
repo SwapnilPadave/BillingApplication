@@ -6,8 +6,10 @@ using BA.Api.Infra.Middleware;
 using BA.Utility.AppSettings;
 using BA.Utility.Constant;
 using BA.Utility.Content;
+using BA.Utility.Folder;
 using Microsoft.AspNetCore.Mvc;
 using QuestPDF.Infrastructure;
+using Serilog;
 using System.Reflection;
 using System.Text.Json.Serialization;
 
@@ -28,7 +30,6 @@ namespace BA.Api
 
             ContentLoader.LanguageLoader(Directory.GetCurrentDirectory());
 
-            // Add services to the container.
             builder.Services.AddControllers(options =>
             {
                 options.Filters.Add<ActionFilter>();
@@ -75,6 +76,12 @@ namespace BA.Api
 
             var jwtSettings = builder.Configuration.GetSection(Constants.JWT_KEY).Get<JwtOptions>();
 
+            //For loging errors details to file
+            var path = Path.Combine(Directory.GetCurrentDirectory(), FolderLocation.LOG_FOLDER, "app-log-.txt");
+            Log.Logger = new LoggerConfiguration().WriteTo.File(path, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 30, shared: true).CreateLogger();
+
+            builder.Host.UseSerilog();
+
             builder.Services.AddCors(options =>
             {
                 options.AddDefaultPolicy(policy =>
@@ -87,7 +94,6 @@ namespace BA.Api
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();

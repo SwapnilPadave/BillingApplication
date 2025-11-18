@@ -4,6 +4,7 @@ using BA.Api.Infra.Requests.StudentRequest;
 using BA.Api.Infra.Validators;
 using BA.Dtos.StudentDto;
 using BA.Service.StudentSer;
+using BA.Utility.Enum;
 using BA.Utility.ExcelHelper;
 using BA.Utility.XmlHelper;
 using Microsoft.AspNetCore.Authorization;
@@ -45,7 +46,7 @@ namespace BA.Api.Controllers
                 {
                     return APIFailureResponse("BA513", null!);
                 }
-                var studentList = ExcelReaderHelper.ReadExcelData<GetStudentsDetailsForBulkUploadDto>(file, 1, 3);
+                var studentList = ExcelReaderHelper.ReadExcelData<GetStudentsDetailsForBulkUploadDto>(file, (int)ExcelEnum.DefaultHeader_StartRow, (int)ExcelEnum.DefaultValues_StartRow);
 
                 var totalRowsCount = studentList.Count;
 
@@ -55,7 +56,13 @@ namespace BA.Api.Controllers
                 if (hasErrors.hasError)
                 {
                     var excelBytes = ExcelReaderHelper.ExportErrorsToExcel(studentList);
-                    return APIFailureResponse("BA1301", new { base64Data = excelBytes, TotalRows = totalRowsCount, ErrorRows = hasErrors.errorRowCount, RowsUploaded = 0 });
+                    return APIFailureResponse("BA1301", new
+                    {
+                        base64Data = excelBytes,
+                        TotalRows = totalRowsCount,
+                        ErrorRows = hasErrors.errorRowCount,
+                        RowsUploaded = 0
+                    });
                 }
                 else
                 {
@@ -63,7 +70,13 @@ namespace BA.Api.Controllers
                     var result = await _studentService.BulkUploadStudentDetails(xmlData);
                     if (result.IsSuccess)
                     {
-                        return APISuccessResponse("BA100", new { base64Data = string.Empty, TotalRows = totalRowsCount, ErrorRows = hasErrors.errorRowCount, RowsUploaded = totalRowsCount });
+                        return APISuccessResponse("BA100", new
+                        {
+                            base64Data = string.Empty,
+                            TotalRows = totalRowsCount,
+                            ErrorRows = hasErrors.errorRowCount,
+                            RowsUploaded = totalRowsCount
+                        });
                     }
                     return APIFailureResponse(result.Error.ErrorMsg, null!);
                 }

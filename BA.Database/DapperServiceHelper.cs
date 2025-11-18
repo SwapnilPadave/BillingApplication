@@ -54,7 +54,7 @@ namespace BA.Database
         {
             using var connection = new SqlConnection(_context.Database.GetConnectionString());
 
-            var result =  await connection.QueryFirstOrDefaultAsync<T>(
+            var result = await connection.QueryFirstOrDefaultAsync<T>(
                 storedProcedure,
                 parameters,
                 commandType: CommandType.StoredProcedure
