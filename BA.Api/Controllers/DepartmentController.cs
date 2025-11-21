@@ -1,9 +1,11 @@
 ﻿using BA.Api.Infra.Model;
 using BA.Service.DepartmentRoleShift;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BA.Api.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class DepartmentController : BaseController

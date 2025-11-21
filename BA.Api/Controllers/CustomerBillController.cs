@@ -94,48 +94,5 @@ namespace BA.Api.Controllers
             var result = _billService.GetSatAndSunCount(requestDto.FromDate, requestDto.ToDate, requestDto.SpecialDays);
             return APISuccessResponse("BA100", result);
         }
-
-        #region different ways to call async method into sync method.
-        //[HttpGet("Test")]
-        //public async Task<ResponseModel> Test()
-        //{
-        //    int id = 0;
-        //    var result = _billService.GetCustomerBillById(id).GetAwaiter().GetResult();
-
-        //    var result1 = _billService.GetCustomerBillById(id).Result;
-
-        //    _billService.GetCustomerBillById(id).Wait();
-        //    Task.WaitAll();
-
-        //    var result2 = Task.Run(() => _billService.GetCustomerBillById(id)).GetAwaiter().GetResult();
-
-        //    return APISuccessResponse("", result);
-        //}
-        #endregion
-
-        #region All methods are using Mediator.
-        //[HttpPost("AddCustomerBillDetailsV1")]
-        //public async Task<ResponseModel> AddCustomerBillDetailsV1([FromBody] AddNewsPaperBillCommand command)
-        //{
-        //    command.UserId = UserId;
-        //    var result = await _mediator.Send(command);
-        //    if (result.IsSuccess)
-        //    {
-        //        return APISuccessResponse("BA100", result.Data!);
-        //    }
-        //    return APISuccessResponse("BA101", null!);
-        //}
-
-        //[HttpPost("GetAllCustomerBillDetails")]
-        //public async Task<ResponseModel> GetAllCustomerBillDetailsV1([FromQuery] GetAllCustomerNewsPaperBillDetailsQuery query)
-        //{
-        //    var result = await _mediator.Send(query);
-        //    if (result.IsSuccess)
-        //    {
-        //        return APISuccessResponse("BA200", result.Data!);
-        //    }
-        //    return APISuccessResponse("Failed", null!);
-        //}
-        #endregion
     }
 }

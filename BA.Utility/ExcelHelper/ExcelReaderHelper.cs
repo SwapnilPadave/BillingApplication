@@ -1,5 +1,4 @@
-﻿using BA.Utility.Content;
-using ClosedXML.Excel;
+﻿using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Http;
@@ -219,7 +218,7 @@ public static class ExcelReaderHelper
     public static string ExportToExcel<T>(IEnumerable<T> items)
     {
         using var workbook = new XLWorkbook();
-        var ws = workbook.AddWorksheet("EmployeesList");
+        var ws = workbook.AddWorksheet("Report");
 
         // Get all properties
         var props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance)

@@ -10,10 +10,12 @@ using BA.Utility.Common_Validator;
 using BA.Utility.Enum;
 using BA.Utility.ExcelHelper;
 using BA.Utility.XmlHelper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BA.Api.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class EmployeeController : BaseController
@@ -92,7 +94,12 @@ namespace BA.Api.Controllers
             var result = await _employeeService.ExportToExcelAsync(request?.FromDate, request?.ToDate);
             if (result.IsSuccess)
             {
-                return APISuccessResponse("BA601", result.Data!);
+                return APISuccessResponse("BA601", new
+                {
+                    FileName = "EmployeesReport",
+                    FileExtension = ".xlsx",
+                    Base64Date = result.Data
+                });
             }
             return APIFailureResponse(result.Error.ErrorMsg, null!);
 

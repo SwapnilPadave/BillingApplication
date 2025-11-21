@@ -29,5 +29,23 @@ namespace BA.Api.Controllers
             })
             .ToArray();
         }
+
+        #region different ways to call async method into sync method.
+        //[HttpGet("Test")]
+        //public async Task<ResponseModel> Test()
+        //{
+        //    int id = 0;
+        //    var result = _billService.GetCustomerBillById(id).GetAwaiter().GetResult();
+
+        //    var result1 = _billService.GetCustomerBillById(id).Result;
+
+        //    _billService.GetCustomerBillById(id).Wait();
+        //    Task.WaitAll();
+
+        //    var result2 = Task.Run(() => _billService.GetCustomerBillById(id)).GetAwaiter().GetResult();
+
+        //    return APISuccessResponse("", result);
+        //}
+        #endregion
     }
 }

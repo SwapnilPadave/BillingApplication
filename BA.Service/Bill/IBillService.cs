@@ -5,7 +5,6 @@ namespace BA.Service.Bill
 {
     public interface IBillService
     {
-        //decimal CalculateTotalAmount(CalculateTotalAmountDto calculateTotalAmountDto);
         Task<Result> AddCustomerBillDetails(int userId, AddCustomerBillDetailsDto dto);
         Task<Result> GetAllCustomerBills();
         Task<Result> GetCustomerBillById(int id);
@@ -13,6 +12,7 @@ namespace BA.Service.Bill
         Task<Result> DeleteCustomerBill(int userId, int id);
         Task<Result> UpdateBillStatusAsync(int userId, int id, bool isBillPaid);
         Task<Result> GenerateBill(int userId, int id);
+        Task<Result> ExportToExcelAsync(string? fromDate, string? toDate, int? customerId);
 
         Dictionary<string, int> GetSatAndSunCount(DateTime fromDate, DateTime toDate, int specialDays = 0);
     }

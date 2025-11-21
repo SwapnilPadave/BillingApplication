@@ -5,7 +5,9 @@ using BA.Entities.Bill;
 using BA.Entities.GeneratedBill;
 using BA.Service.Email;
 using BA.Utility.AppSettings;
+using BA.Utility.ExcelHelper;
 using BA.Utility.Result;
+using ClosedXML.Excel;
 using Dapper;
 using Microsoft.Extensions.Options;
 using QuestPDF.Fluent;
@@ -510,6 +512,81 @@ namespace BA.Service.Bill
             }
         }
 
+        public async Task<Result> ExportToExcelAsync(string? fromDate, string? toDate, int? customerId)
+        {
+            try
+            {
+                var param = new DynamicParameters();
+                param.Add("@FromDate", fromDate);
+                param.Add("@ToDate", toDate);
+                param.Add("@CustomerId", customerId);
+                var data = await _dapper.QueryListAsync<GetBillDetailsForReportDto>("Usp_GetBillDetailsForReport", param);
+
+                using var workbook = new XLWorkbook();
+                var ws = workbook.AddWorksheet("BillReport");
+                ExcelFormatHelper.MergeCells(ws, 1, 1, 19, "Customer Bills Details Report");
+                ExcelFormatHelper.MergeCells(ws, 2, 1, 19);
+                
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 1, "Customer Name");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 2, "Customer Address");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 3, "News Paper Name");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 4, "News Paper Language");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 5, "Bill From Date");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 6, "Bill To Date");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 7, "Normal Days");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 8, "Sundays");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 9, "Saturdays");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 10, "Special Days");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 11, "Total Days");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 12, "Normal Day Amount");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 13, "Sunday Amount");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 14, "Saturday Amount");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 15, "Special Day Amount");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 16, "Service Charge");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 17, "Bill Amount");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 18, "Total Bill Amount");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 19, "Bill Paid");
+
+                int row = 4;
+                foreach (var item in data)
+                {
+                    ExcelFormatHelper.ApplyStringFormat(ws, row, 1, item.CustomerName);
+                    ExcelFormatHelper.ApplyStringFormat(ws, row, 2, item.CustomerAddress);
+                    ExcelFormatHelper.ApplyStringFormat(ws, row, 3, item.NewsPaperName);
+                    ExcelFormatHelper.ApplyStringFormat(ws, row, 4, item.NewsPaperLanguage);
+                    ExcelFormatHelper.ApplyDateFormat(ws, row, 5, item.BillFromDate);
+                    ExcelFormatHelper.ApplyDateFormat(ws, row, 6, item.BillToDate);
+                    ExcelFormatHelper.ApplyIntegerFormat(ws, row, 7, item.NormalDays);
+                    ExcelFormatHelper.ApplyIntegerFormat(ws, row, 8, item.Sundays);
+                    ExcelFormatHelper.ApplyIntegerFormat(ws, row, 9, item.Saturdays);
+                    ExcelFormatHelper.ApplyIntegerFormat(ws, row, 10, item.SpecialDays);
+                    ExcelFormatHelper.ApplyIntegerFormat(ws, row, 11, item.TotalDays);
+                    ExcelFormatHelper.ApplyCurrencyFormat(ws, row, 12, item.NormalDayAmount);
+                    ExcelFormatHelper.ApplyCurrencyFormat(ws, row, 13, item.SundayAmount);
+                    ExcelFormatHelper.ApplyCurrencyFormat(ws, row, 14, item.SaturdayAmount);
+                    ExcelFormatHelper.ApplyCurrencyFormat(ws, row, 15, item.SpecialDayAmount);
+                    ExcelFormatHelper.ApplyCurrencyFormat(ws, row, 16, item.ServiceCharge);
+                    ExcelFormatHelper.ApplyCurrencyFormat(ws, row, 17, item.BillAmount);
+                    ExcelFormatHelper.ApplyCurrencyFormat(ws, row, 18, item.TotalBillAmount);
+                    ExcelFormatHelper.ApplyStringFormat(ws, row, 19, item.IsBillPaid ? "Yes" : "No");
+
+                    row++;
+                }
+                ws.Columns().AdjustToContents();
+
+                using var stream = new MemoryStream();
+                workbook.SaveAs(stream);
+                var base64String = Convert.ToBase64String(stream.ToArray());
+
+                return Result.Success(base64String);
+            }
+            catch (Exception ex)
+            {
+                await _sqlCommand.ExceptionLogToDatabase(ex);
+                return Result.Failure(new Error("BA501"));
+            }
+        }
+        
         private int CalculateTotalDays(DateTime fromDate, DateTime toDate)
         {
             int totalDays = (toDate - fromDate).Days + 1;
@@ -525,7 +602,6 @@ namespace BA.Service.Bill
             var totalAmount = days * amount;
             return totalAmount;
         }
-
         private async Task<Result> SendNewspaperBillWithAttachmentEmail(int userId, string toEmail, string fileName, string customerName, string month, string CcMail = "", string bccMail = "", byte[]? attachmentBytes = null)
         {
             try

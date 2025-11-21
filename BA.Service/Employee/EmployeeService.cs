@@ -4,7 +4,9 @@ using BA.Dtos.EmployeeDto;
 using BA.Entities.JobApp_Employees;
 using BA.Service.CurrentUserHelper;
 using BA.Utility.Content;
+using BA.Utility.ExcelHelper;
 using BA.Utility.Result;
+using ClosedXML.Excel;
 using Dapper;
 
 namespace BA.Service.Employee
@@ -181,9 +183,58 @@ namespace BA.Service.Employee
                 param.Add("@FromDate", fromDate);
                 param.Add("@ToDate", toDate);
 
-                var employeeList = await _dapper.QueryListAsync<GetEmployeeListForExcelExport>("Usp_GetEmployeeListForExport", param);
+                var employeeList = await _dapper.QueryListAsync<GetEmployeeListForExcelReport>("Usp_GetEmployeeListForExport", param);
 
-                var base64String = ExcelReaderHelper.ExportToExcel(employeeList);
+                using var workbook = new XLWorkbook();
+                var ws = workbook.AddWorksheet("EmployeeReport");
+                ExcelFormatHelper.MergeCells(ws, 1, 1, 15, "Employee Details Report");
+                ExcelFormatHelper.MergeCells(ws, 2, 1, 15);
+
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 1, "Full Name");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 2, "Email Address");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 3, "Mobile Number");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 4, "Date Of Birth");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 5, "Date Of Joining");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 6, "Age");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 7, "Address");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 8, "Country Name");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 9, "State Name");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 10, "City Name");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 11, "Department Name");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 12, "Employee Role");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 13, "Shift");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 14, "Shift Time");
+                ExcelFormatHelper.ApplyHeaderFormat(ws, 3, 15, "Is Active");
+
+
+                int row = 4;
+                foreach (var item in employeeList)
+                {
+                    ExcelFormatHelper.ApplyStringFormat(ws, row, 1, item.FullName);
+                    ExcelFormatHelper.ApplyStringFormat(ws, row, 2, item.Email);
+                    ExcelFormatHelper.ApplyStringFormat(ws, row, 3, item.MobileNumber);
+                    ExcelFormatHelper.ApplyDateFormat(ws, row, 4, item.DateOfBirth);
+                    ExcelFormatHelper.ApplyDateFormat(ws, row, 5, item.DateOfJoining);
+                    ExcelFormatHelper.ApplyIntegerFormat(ws, row, 6, item.Age);
+                    ExcelFormatHelper.ApplyStringFormat(ws, row, 7, item.Address);
+                    ExcelFormatHelper.ApplyStringFormat(ws, row, 8, item.CountryName);
+                    ExcelFormatHelper.ApplyStringFormat(ws, row, 9, item.StateName);
+                    ExcelFormatHelper.ApplyStringFormat(ws, row, 10, item.CityName);
+                    ExcelFormatHelper.ApplyStringFormat(ws, row, 11, item.DeptName);
+                    ExcelFormatHelper.ApplyStringFormat(ws, row, 12, item.RoleName);
+                    ExcelFormatHelper.ApplyStringFormat(ws, row, 13, item.ShiftCode);
+                    ExcelFormatHelper.ApplyStringFormat(ws, row, 14, item.ShiftTime);
+                    ExcelFormatHelper.ApplyStringFormat(ws, row, 15, item.IsActive ? "Active" : "Deactive");
+
+                    row++;
+                }
+
+                ws.Columns().AdjustToContents();
+
+                using var stream = new MemoryStream();
+                workbook.SaveAs(stream);
+                var base64String = Convert.ToBase64String(stream.ToArray());
+
                 return Result.Success(base64String);
             }
             catch (Exception ex)
@@ -236,23 +287,4 @@ namespace BA.Service.Employee
             return string.Join(", ", errorMessageList);
         }
     }
-
-}
-public class GetEmployeeListForExcelExport
-{    
-    public string FullName { get; set; } = default!;
-    public string Email { get; set; } = default!;
-    public string MobileNumber { get; set; } = default!;
-    public string DateOfBirth { get; set; } = default!;
-    public string DateOfJoining { get; set; } = default!;
-    public int Age { get; set; } = default!;
-    public string Address { get; set; } = default!;
-    public string CountryName { get; set; } = default!;
-    public string StateName { get; set; } = default!;
-    public string CityName { get; set; } = default!;
-    public string DeptName { get; set; } = default!;
-    public string RoleName { get; set; } = default!;
-    public string ShiftCode { get; set; } = default!;
-    public string ShiftTime { get; set; } = default!;
-
 }
