@@ -42,7 +42,7 @@ namespace BA.Api.Controllers
                 { 
                     FileName = "BillDetailsReport",
                     FileExtension = ".xlsx",
-                    Base64Date = result.Data 
+                    Base64Data = result.Data 
                 });
             }
             return APIFailureResponse(result.Error.ErrorMsg, null!);
