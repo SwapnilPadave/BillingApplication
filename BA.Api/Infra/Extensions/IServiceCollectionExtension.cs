@@ -5,9 +5,11 @@ using BA.Database.Infra;
 using BA.Database.Repos.BillRepository;
 using BA.Database.Repos.CustomerBillDetailsRepository;
 using BA.Database.Repos.CustomerRepository;
+using BA.Database.Repos.Depart_Position_StateRepository;
 using BA.Database.Repos.EmailTemplateRepository;
 using BA.Database.Repos.EmployeeRepository;
 using BA.Database.Repos.GeneratedBillRepository;
+using BA.Database.Repos.LocationRepository;
 using BA.Database.Repos.NewsPapersReposiotry;
 using BA.Database.Repos.StudentRepository;
 using BA.Database.Repos.TokenRepository;
@@ -52,6 +54,12 @@ namespace BA.Api.Infra.Extensions
             services.AddTransient(typeof(IGeneratedBillDetailsRepository), typeof(GeneratedBillDetailsRepository));
             services.AddTransient(typeof(IEmailTemplateRepository), typeof(EmailTemplateRepository));
             services.AddTransient(typeof(IStudentRepository), typeof(StudentRepository));
+            services.AddTransient(typeof(ICountryRepository), typeof(CountryRepository));
+            services.AddTransient(typeof(IStateRepository), typeof(StateRepository));
+            services.AddTransient(typeof(ICityRepository), typeof(CityRepository));
+            services.AddTransient(typeof(IDepartmentRepository), typeof(DepartmentRepository));
+            services.AddTransient(typeof(IPositionRoleRepository), typeof(PositionRoleRepository));
+            services.AddTransient(typeof(IShiftRepository), typeof(ShiftRepository));
 
             services.AddTransient<SqlCommands>();
             services.AddTransient<SqlServiceHelper>();

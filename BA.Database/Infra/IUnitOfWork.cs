@@ -1,9 +1,11 @@
 ﻿using BA.Database.Repos.BillRepository;
 using BA.Database.Repos.CustomerBillDetailsRepository;
 using BA.Database.Repos.CustomerRepository;
+using BA.Database.Repos.Depart_Position_StateRepository;
 using BA.Database.Repos.EmailTemplateRepository;
 using BA.Database.Repos.EmployeeRepository;
 using BA.Database.Repos.GeneratedBillRepository;
+using BA.Database.Repos.LocationRepository;
 using BA.Database.Repos.NewsPapersReposiotry;
 using BA.Database.Repos.StudentRepository;
 using BA.Database.Repos.TokenRepository;
@@ -26,6 +28,12 @@ namespace BA.Database.Infra
         public IGeneratedBillDetailsRepository GeneratedBillDetailsRepository { get; }
         public IEmailTemplateRepository EmailTemplateRepository { get; }
         public IStudentRepository StudentRepository { get; }
+        public ICountryRepository CountryRepository { get; }
+        public IStateRepository StateRepository { get; }
+        public ICityRepository CityRepository { get; }
+        public IDepartmentRepository DepartmentRepository { get; }
+        public IPositionRoleRepository PositionRoleRepository { get; }
+        public IShiftRepository ShiftRepository { get; }
 
 
         #region // Methods for managing the database context and transactions

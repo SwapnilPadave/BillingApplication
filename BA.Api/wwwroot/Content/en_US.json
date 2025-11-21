@@ -38,6 +38,14 @@
   "BA556": "A deadlock occurred. Please retry the operation.",
   "BA557": "Duplicate record detected. This value already exists.",
 
+  //Common Report validation messages
+  "BA601": "Report generated successfully.",
+  "BA602": "Failed to generate report.",
+  "BA603": "Please select from date.",
+  "BA604": "Please select to date.",
+  "BA605": "From Date is not a valid date.",
+  "BA606": "ToDate is not a valid date.",
+
   //News Paper Details validation messages
   "BA701": "News paper details added successfully.",
   "BA702": "Failed to create news paper details.",
@@ -87,5 +95,30 @@
   "BA1303": "Student email is required.",
   "BA1304": "Student address is required.",
   "BA1305": "Student Name must be at least 2 characters and can contain letters, spaces, and the following characters: { '  `  - }.",
-  "BA1306": "Student Address must be at least 3 characters and can contain letters, numbers, spaces, and the following characters: { ,  .  '  - }."
+  "BA1306": "Student Address must be at least 3 characters and can contain letters, numbers, spaces, and the following characters: { ,  .  '  - }.",
+
+  //Employee Details validation messages
+  "BA1401": "Employee first name is required.",
+  "BA1402": "Employee middle name is required.",
+  "BA1403": "Employee last name is required.",
+  "BA1404": "Email is required.",
+  "BA1405": "Mobile number is required.",
+  "BA1406": "Employee address is required.",
+  "BA1407": "Date of birth must be in the past.",
+  "BA1408": "Date of joining cannot be in the future.",
+  "BA1409": "Please enter valid age in number and greater than 0.",
+  "BA1410": "Employee First Name must be at least 2 characters and can contain letters, spaces, and the following characters: { '  `  - }.",
+  "BA1411": "Employee Middle Name must be at least 2 characters and can contain letters, spaces, and the following characters: { '  `  - }.",
+  "BA1412": "Employee Last Name must be at least 2 characters and can contain letters, spaces, and the following characters: { '  `  - }.",
+  "BA1413": "Please enter valid email address.",
+  "BA1414": "Please enter valid mobile number.",
+  "BA1415": "Employee Address must be at least 3 characters and can contain letters, numbers, spaces, and the following characters: { ,  .  '  - }.",
+  "BA1416": "Country not found",
+  "BA1417": "State not found",
+  "BA1418": "City not found",
+  "BA1419": "Department not found",
+  "BA1420": "Position not found",
+  "BA1421": "Shift not found",
+  "BA1422": "Employee added successfully.",
+  "BA1423": "Employee updated successfully."
 }

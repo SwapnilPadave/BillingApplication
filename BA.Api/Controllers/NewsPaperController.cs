@@ -79,15 +79,5 @@ namespace BA.Api.Controllers
                 return APISuccessResponse("BA100", result.Data!);
             return APIFailureResponse(result.Error.ErrorMsg, null!);
         }
-
-        [HttpGet("GetEmployees")]
-        [AllowAnonymous]
-        public async Task<ResponseModel> GetEmployeesAsync(CancellationToken cancellationToken)
-        {
-            var result = await _employeeService.GetEmployees();
-            if (result.IsSuccess)
-                return APISuccessResponse("BA100", result.Data!);
-            return APIFailureResponse(result.Error.ErrorMsg, null!);
-        }
     }
 }

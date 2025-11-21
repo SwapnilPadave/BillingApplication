@@ -1,6 +1,6 @@
-﻿namespace BA.Dtos.EmployeeDto
+﻿namespace BA.Api.Infra.Requests.EmployeeRequest
 {
-    public class GetEmployeeDto
+    public class UpdateEmployeeRequest
     {
         public int Id { get; set; }
         public string FirstName { get; set; } = string.Empty;
@@ -8,23 +8,15 @@
         public string LastName { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
         public string MobileNumber { get; set; } = string.Empty;
-        public DateTime DateOfBirth { get; set; }
-        public DateTime DateOfJoining { get; set; }
+        public DateTime DateOfBirth { get; set; } = DateTime.Now;
+        public DateTime DateOfJoining { get; set; } = DateTime.Now;
         public int Age { get; set; }
         public string Address { get; set; } = string.Empty;
         public int CountryId { get; set; }
-        public string CountryName { get; set; } = string.Empty;
         public int StateId { get; set; }
-        public string StateName { get; set; } = string.Empty;
         public int CityId { get; set; }
-        public string CityName { get; set; } = string.Empty;
         public int DepartmentId { get; set; }
-        public string DeptName { get; set; } = string.Empty;
         public int PositionId { get; set; }
-        public string RoleName { get; set; } = string.Empty;
         public int ShiftId { get; set; }
-        public string ShiftCode { get; set; } = string.Empty;
-        public string ShiftTime { get; set; } = string.Empty;
-        public bool IsActive { get; set; }
     }
 }

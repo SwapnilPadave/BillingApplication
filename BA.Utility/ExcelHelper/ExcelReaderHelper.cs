@@ -3,6 +3,7 @@ using ClosedXML.Excel;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using Microsoft.AspNetCore.Http;
+using System.ComponentModel;
 using System.Reflection;
 
 public static class ExcelReaderHelper
@@ -207,6 +208,70 @@ public static class ExcelReaderHelper
             row++;
         }
 
+        // Auto-size columns for readability
+        ws.Columns().AdjustToContents();
+
+        using var stream = new MemoryStream();
+        workbook.SaveAs(stream);
+        return Convert.ToBase64String(stream.ToArray());
+    }
+
+    public static string ExportToExcel<T>(IEnumerable<T> items)
+    {
+        using var workbook = new XLWorkbook();
+        var ws = workbook.AddWorksheet("EmployeesList");
+
+        // Get all properties
+        var props = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance)
+                             .ToList();
+        int col = 1;
+        // Write headers for normal properties
+        foreach (var p in props)
+        {
+            var displayAttr = p.GetCustomAttribute<DisplayNameAttribute>();
+            string header = displayAttr != null ? displayAttr.DisplayName : p.Name;
+
+            var cell = ws.Cell(1, col);
+            cell.Value = p.Name;
+
+            cell.Style.Font.Bold = true;
+            cell.Style.Fill.BackgroundColor = XLColor.Yellow;
+            cell.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+            cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+
+            col++;
+        }
+        int row = 2;
+        foreach (var item in items)
+        {
+            col = 1;
+            // Write normal properties
+            foreach (var p in props)
+            {
+                var displayAttr = p.GetCustomAttribute<DisplayNameAttribute>();
+                string header = displayAttr?.DisplayName ?? p.Name;
+
+                var cell = ws.Cell(row, col);
+                cell.Value = p.GetValue(item)?.ToString();
+
+                var value = p.GetValue(item);
+
+                bool isNumeric = value is sbyte or byte or short or ushort
+                                 || value is int or uint or long or ulong
+                                 || value is float or double or decimal;
+
+                // Apply alignment
+                cell.Style.Alignment.Horizontal = isNumeric
+                    ? XLAlignmentHorizontalValues.Right
+                    : XLAlignmentHorizontalValues.Left;
+
+                // Apply borders
+                cell.Style.Border.OutsideBorder = XLBorderStyleValues.Thin;
+                cell.Style.Border.InsideBorder = XLBorderStyleValues.Thin;
+                col++;
+            }
+            row++;
+        }
         // Auto-size columns for readability
         ws.Columns().AdjustToContents();
 

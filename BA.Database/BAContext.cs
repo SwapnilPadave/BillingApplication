@@ -1,9 +1,12 @@
 ﻿using BA.Entities.Bill;
+using BA.Entities.Country_State_City;
 using BA.Entities.Customer;
-using BA.Entities.Departments;
 using BA.Entities.Email;
-using BA.Entities.Employees;
 using BA.Entities.GeneratedBill;
+using BA.Entities.JobApp_Departments;
+using BA.Entities.JobApp_Employees;
+using BA.Entities.JobApp_PositionRole;
+using BA.Entities.JobApp_Shifts;
 using BA.Entities.NewsPaper;
 using BA.Entities.Shift;
 using BA.Entities.Student;
@@ -38,8 +41,6 @@ namespace BA.Database
         public DbSet<CustomerDetails> CustomerDetails { get; set; }
         public DbSet<CustomerBillDetails> CustomerBillDetails { get; set; }
         public DbSet<JwtToken> JwtToken { get; set; }
-        public DbSet<Employee> Employees { get; set; }
-        public DbSet<Department> Departments { get; set; }
         public DbSet<Shifts> Shifts { get; set; }
         public DbSet<CustomerNewsPaperBillDetail> CustomerNewsPaperBillDetails { get; set; }
         public DbSet<GeneratedNewsPaperBillDetails> GeneratedNewsPaperBillDetails { get; set; }
@@ -48,5 +49,15 @@ namespace BA.Database
         public DbSet<VideoFormat> VideoFormats { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Student> Student { get; set; }
+        public DbSet<CountryMaster> CountryMaster { get; set; }
+        public DbSet<StateMaster> StateMaster { get; set; }
+        public DbSet<CityMaster> CityMaster { get; set; }
+
+
+        // Job Application Related DbSets
+        public DbSet<JobApp_EmployeesDetails> JobApp_EmployeesDetails { get; set; }
+        public DbSet<JobApp_DepartmentDetailMaster> JobApp_DepartmentDetailMaster { get; set; }
+        public DbSet<JobApp_PositionRoleDetailMaster> JobApp_PositionRoleDetailMaster { get; set; }
+        public DbSet<JobApp_ShiftDetailsMaster> JobApp_ShiftDetailsMaster { get; set; }
     }
 }

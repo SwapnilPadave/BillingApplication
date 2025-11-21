@@ -10,5 +10,10 @@
         {
             return System.Text.RegularExpressions.Regex.IsMatch(address, RegexConstants.ADDRESS_REGEX);
         }
+
+        public static bool IsValidPhoneNumber(string phoneNumber)
+        {
+            return System.Text.RegularExpressions.Regex.IsMatch(phoneNumber, RegexConstants.PHONE_NUMBER_REGEX);
+        }
     }
 }
